@@ -234,149 +234,20 @@
                             <p class="title-categoria mb-0 mb-4">
                                 <b>Configure o horário em que sua loja estará recebendo pedidos para delivery ou retirada.</b>
                             </p>
-                        
-                            <div class="row horario mb-4">
 
-                                <div class="col-2">
-                                    <div class="form-group">
-                                        <p class="title-categoria mb-0"><b>De:</b></p>
-                                        <select class="form-control">
-                                            <option value="-1">...</option>
-                                            <option value="0">Domingo</option>
-                                            <option value="1">Segunda</option>
-                                            <option value="2">Terça</option>
-                                            <option value="3">Quarta</option>
-                                            <option value="4">Quinta</option>
-                                            <option value="5">Sexta</option>
-                                            <option value="6">Sábado</option>
-                                        </select>
-                                    </div>
-                                </div>
+                            <div id="listaHorarios">
 
-                                <div class="col-2">
-                                    <div class="form-group">
-                                        <p class="title-categoria mb-0"><b>até:</b></p>
-                                        <select class="form-control">
-                                            <option value="-1">...</option>
-                                            <option value="0">Domingo</option>
-                                            <option value="1">Segunda</option>
-                                            <option value="2">Terça</option>
-                                            <option value="3">Quarta</option>
-                                            <option value="4">Quinta</option>
-                                            <option value="5">Sexta</option>
-                                            <option value="6">Sábado</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                
-                                <div class="col-7">
-                                    <div class="row">
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <p class="title-categoria mb-0"><b>das:</b></p>
-                                                <input type="time" class="form-control"/>
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <p class="title-categoria mb-0"><b>até as:</b></p>
-                                                <input type="time" class="form-control"/>
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <p class="title-categoria mb-0"><b>e das:</b></p>
-                                                <input type="time" class="form-control"/>
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <p class="title-categoria mb-0"><b>até as:</b></p>
-                                                <input type="time" class="form-control"/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-1 mt-2">
-                                    <a class="btn btn-red btn-sm mt-4">
-                                        <i class="fas fa-trash-alt"></i> 
-                                    </a>
-                                </div>
                             </div>
 
-                            <div class="row horario mb-4">
-                                <div class="col-2">
-                                    <div class="form-group">
-                                        <p class="title-categoria mb-0"><b>De:</b></p>
-                                        <select class="form-control">
-                                            <option value="-1">...</option>
-                                            <option value="0">Domingo</option>
-                                            <option value="1">Segunda</option>
-                                            <option value="2">Terça</option>
-                                            <option value="3">Quarta</option>
-                                            <option value="4">Quinta</option>
-                                            <option value="5">Sexta</option>
-                                            <option value="6">Sábado</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-2">
-                                    <div class="form-group">
-                                        <p class="title-categoria mb-0"><b>até:</b></p>
-                                        <select class="form-control">
-                                            <option value="-1">...</option>
-                                            <option value="0">Domingo</option>
-                                            <option value="1">Segunda</option>
-                                            <option value="2">Terça</option>
-                                            <option value="3">Quarta</option>
-                                            <option value="4">Quinta</option>
-                                            <option value="5">Sexta</option>
-                                            <option value="6">Sábado</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-7">
-                                    <div class="row">
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <p class="title-categoria mb-0"><b>das:</b></p>
-                                                <input type="time" class="form-control"/>
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <p class="title-categoria mb-0"><b>até as:</b></p>
-                                                <input type="time" class="form-control"/>
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <p class="title-categoria mb-0"><b>e das:</b></p>
-                                                <input type="time" class="form-control"/>
-                                            </div>
-                                        </div>
-                                        <div class="col-3">
-                                            <div class="form-group">
-                                                <p class="title-categoria mb-0"><b>até as:</b></p>
-                                                <input type="time" class="form-control"/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-1 mt-2">
-                                    <a class="btn btn-red btn-sm mt-4">
-                                        <i class="fas fa-trash-alt"></i> 
-                                    </a>
-                                </div>
-                            </div>
-
-                            <div class="card card-select mt-5">
+                            <div class="card card-select mt-5" onclick="empresa.method.adicionarHorario()">
                                 <div class="infos-produto-opcional">
-                                    <p class="mb-0 color-primary"><i class="fas fa-plus-circle"></i>&nbsp; Adicionar novo horário</p>
+                                    <p  class="mb-0 color-primary">
+                                        <i class="fas fa-plus-circle"></i>&nbsp; Adicionar novo horário
+                                    </p>
                                 </div>
                             </div>
 
-                            <a class="btn btn-yellow btn-sm mt-5">
+                            <a class="btn btn-yellow btn-sm mt-5" onclick="empresa.method.salvarHorarios()">
                                 <i class="fas fa-check"></i>&nbsp; Salvar Alterações
                             </a>
 

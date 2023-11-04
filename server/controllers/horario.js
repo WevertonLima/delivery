@@ -2,6 +2,8 @@ const AcessoDados = require('../db/acessodados.js');
 const db = new AcessoDados();
 const ReadCommandSql = require('../common/readCommandSql.js');
 const readCommandSql = new ReadCommandSql();
+const UsuarioTokenAcesso = require('../common/protecaoAcesso');
+const Acesso = new UsuarioTokenAcesso();
 
 const controllers = () => {
 
@@ -28,8 +30,46 @@ const controllers = () => {
 
     }
 
+    // obtem os horários de funcionamento da empresa
+    const salvarHorarios = async (req) => {
+
+        try {
+
+            // obtem a empresa logada
+            let _empresaId = Acesso.retornaCodigoTokenAcesso('IdEmpresa', req.headers['authorization']);
+
+            var ComandoSQLRemove = await readCommandSql.retornaStringSql('removerHorarios', 'horario');
+            await db.Query(ComandoSQLRemove, { idempresa: _empresaId });
+
+            var ComandoSQL = await readCommandSql.retornaStringSql('salvarHorario', 'horario');
+
+            // percorre os elementos e salva
+            await Promise.all(
+                req.body.map(async (element) => {
+                    console.log('salvar: ', element)
+                    element.idempresa = _empresaId;
+                    await db.Query(ComandoSQL, element);
+                })
+            )            
+
+            return {
+                status: 'success',
+                message: 'Horários atualizados com sucesso!',
+            }
+
+        } catch (ex) {
+            console.log(ex);
+            return {
+                status: 'error',
+                message: 'Falha ao atualizar os horários da empresa.'
+            }
+        }
+
+    }
+
     return Object.create({
         obterHorarios
+        , salvarHorarios
     })
 
 }

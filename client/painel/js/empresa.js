@@ -17,10 +17,6 @@ empresa.event = {
         app.method.validaToken();
         app.method.carregarDadosEmpresa();
 
-        setTimeout(() => {
-            app.method.loading(false);
-        }, 1000);
-
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
@@ -85,10 +81,15 @@ empresa.method = {
 
     },
 
+    // obtem os dados da empresa
     obterDados: () => {
+
+        app.method.loading(true);
 
         app.method.get('/empresa/sobre',
             (response) => {
+
+                app.method.loading(false);
 
                 if (response.status == "error") {
                     console.log(response.message)
@@ -131,6 +132,7 @@ empresa.method = {
 
             },
             (error) => {
+                app.method.loading(false);
                 console.log('error', error)
             }
         )
@@ -175,40 +177,11 @@ empresa.method = {
                 empresa.method.obterDados();
                 app.method.carregarDadosEmpresa();
             },
-            (xhr, ajaxOptions, error) => {
-                app.method.loading(false);
-                console.log('xhr', xhr)
-                console.log('ajaxOptions', ajaxOptions)
-                console.log('error', error)
-            }
-        )
-
-    },
-
-    // obtem os horários da empresa
-    obterHorarios: () => {
-
-        app.method.get('/empresa/sobre',
-            (response) => {
-
-                if (response.status == "error") {
-                    console.log(response.message)
-                    return;
-                }
-
-                empresa.method.carregarHorarios(response.data)
-
-            },
             (error) => {
+                app.method.loading(false);
                 console.log('error', error)
             }
         )
-
-    },
-
-    // carrega os horarios na tela
-    carregarHorarios: (lista) => {
-
 
     },
 
@@ -346,7 +319,7 @@ empresa.method = {
                 var script = document.createElement('script');
 
                 //Sincroniza com o callback.
-                script.src = 'https://viacep.com.br/ws/'+ cep + '/json/?callback=empresa.method.callbackCep';
+                script.src = 'https://viacep.com.br/ws/' + cep + '/json/?callback=empresa.method.callbackCep';
 
                 //Insere script no documento e carrega o conteúdo.
                 document.body.appendChild(script);
@@ -468,5 +441,255 @@ empresa.method = {
         )
 
     },
+
+    // obtem os horários da empresa
+    obterHorarios: () => {
+
+        document.getElementById("listaHorarios").innerHTML = '';
+
+        app.method.get('/empresa/horario',
+            (response) => {
+
+                if (response.status == "error") {
+                    console.log(response.message)
+                    return;
+                }
+
+                empresa.method.carregarHorarios(response.data)
+
+            },
+            (error) => {
+                console.log('error', error)
+            }
+        )
+
+    },
+
+    // carrega os horarios na tela
+    carregarHorarios: (lista) => {
+
+        if (lista.length > 0) {
+
+            // percorre os horários e adiciona na tela
+            lista.forEach((e, i) => {
+
+                // cria um ID aleatorio
+                let id = Math.floor(Date.now() * Math.random()).toString();
+
+                let temp = empresa.template.horario.replace(/\${id}/g, id)
+
+                let htmlObject = document.createElement('div');
+                htmlObject.classList.add('row', 'horario', 'mb-4');
+                htmlObject.id = `horario-${id}`;
+                htmlObject.innerHTML = temp;
+
+                // adiciona o horario na tela
+                document.getElementById("listaHorarios").appendChild(htmlObject);
+
+                // deixa um delay para depois inserir os valores na tela
+                setTimeout(() => {
+                    document.querySelector(`#horario-${id} .diainicio`).value = e.diainicio;
+                    document.querySelector(`#horario-${id} .diafim`).value = e.diafim;
+                    document.querySelector(`#horario-${id} .iniciohorarioum`).value = e.iniciohorarioum;
+                    document.querySelector(`#horario-${id} .fimhorarioum`).value = e.fimhorarioum;
+                    document.querySelector(`#horario-${id} .iniciohorariodois`).value = e.iniciohorariodois;
+                    document.querySelector(`#horario-${id} .fimhorariodois`).value = e.fimhorariodois;
+                }, 200);
+
+            })
+
+        }
+        else {
+
+            // nenhum horário encontrado, adiciona uma linha em branco
+            empresa.method.adicionarHorario();
+
+        }
+
+    },
+
+    // remover linha do horário
+    removerHorario: (id) => {
+        document.getElementById(`horario-${id}`).remove();
+    },
+
+    // adiciona uma linha no horário
+    adicionarHorario: () => {
+
+        let adicionar = true;
+
+        // primeiro valida se tem alguma linha sem registros;
+        document.querySelectorAll('#listaHorarios .horario').forEach((e, i) => {
+            let _id = e.id.split('-')[1];
+
+            let diainicio = document.querySelector('#diainicio-' + _id).value;
+            let diafim = document.querySelector('#diafim-' + _id).value;
+            let iniciohorarioum = document.querySelector('#iniciohorarioum-' + _id).value;
+            let fimhorarioum = document.querySelector('#fimhorarioum-' + _id).value;
+
+            if (diainicio <= -1 || diafim <= -1 || iniciohorarioum.length <= 0 || fimhorarioum.length <= 0) {
+                adicionar = false;
+                app.method.mensagem('Antes de adicionar outra linha, verifique se não existem linhas em branco')
+            }
+
+        });
+
+        if (!adicionar) {
+            return;
+        }
+
+        let id = Math.floor(Date.now() * Math.random()).toString();
+
+        let temp = empresa.template.horario.replace(/\${id}/g, id);
+
+        var htmlObject = document.createElement('div');
+        htmlObject.classList.add('row', 'horario', 'mb-4');
+        htmlObject.id = `horario-${id}`;
+        htmlObject.innerHTML = temp;
+
+        // adiciona o horario na tela
+        document.getElementById("listaHorarios").appendChild(htmlObject);
+
+    },
+
+    // valida os campos e salva os horários
+    salvarHorarios: () => {
+
+        let _horarios = [];
+        let continuar = true;
+
+        // primeiro valida se tem alguma linha sem registros;
+        document.querySelectorAll('#listaHorarios .horario').forEach((e, i) => {
+            let _id = e.id.split('-')[1];
+
+            let diainicio = document.querySelector('#diainicio-' + _id).value;
+            let diafim = document.querySelector('#diafim-' + _id).value;
+            let iniciohorarioum = document.querySelector('#iniciohorarioum-' + _id).value;
+            let fimhorarioum = document.querySelector('#fimhorarioum-' + _id).value;
+            let iniciohorariodois = document.querySelector('#iniciohorariodois-' + _id).value;
+            let fimhorariodois = document.querySelector('#fimhorariodois-' + _id).value;
+
+            // valida os campos obrigatórios
+            if (diainicio <= -1 || diafim <= -1 || iniciohorarioum.length <= 0 || fimhorarioum.length <= 0) {
+                continuar = false;
+                app.method.mensagem('Alguns campos obrigatórios não foram preenchidos.');
+            }
+
+            _horarios.push({
+                diainicio: diainicio,
+                diafim: diafim,
+                iniciohorarioum: iniciohorarioum,
+                fimhorarioum: fimhorarioum,
+                iniciohorariodois: iniciohorariodois,
+                fimhorariodois: fimhorariodois
+            })
+
+        });
+
+        if (!continuar) {
+            return;
+        }
+
+        console.log('_horarios', _horarios);
+
+        app.method.loading(true);
+
+        app.method.post('/empresa/horario', JSON.stringify(_horarios),
+            (response) => {
+                console.log(response)
+
+                app.method.loading(false);
+
+                if (response.status === 'error') {
+                    app.method.mensagem(response.message);
+                    return;
+                }
+
+                app.method.mensagem(response.message, 'green');
+
+                empresa.method.openTab('horario');
+            },
+            (xhr, ajaxOptions, error) => {
+                app.method.loading(false);
+                console.log('xhr', xhr)
+                console.log('ajaxOptions', ajaxOptions)
+                console.log('error', error)
+            }
+        )
+
+    },
+
+}
+
+empresa.template = {
+
+    horario: `
+
+        <div class="col-2">
+            <div class="form-group">
+                <p class="title-categoria mb-0"><b>De:*</b></p>
+                <select class="form-control diainicio" id="diainicio-\${id}">
+                    <option value="-1">...</option>
+                    <option value="0">Domingo</option>
+                    <option value="1">Segunda</option>
+                    <option value="2">Terça</option>
+                    <option value="3">Quarta</option>
+                    <option value="4">Quinta</option>
+                    <option value="5">Sexta</option>
+                    <option value="6">Sábado</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="col-2">
+            <div class="form-group">
+                <p class="title-categoria mb-0"><b>até:*</b></p>
+                <select class="form-control diafim" id="diafim-\${id}">
+                    <option value="-1">...</option>
+                    <option value="0">Domingo</option>
+                    <option value="1">Segunda</option>
+                    <option value="2">Terça</option>
+                    <option value="3">Quarta</option>
+                    <option value="4">Quinta</option>
+                    <option value="5">Sexta</option>
+                    <option value="6">Sábado</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="col-7">
+            <div class="row">
+                <div class="col-3">
+                    <div class="form-group">
+                        <p class="title-categoria mb-0"><b>das:*</b></p>
+                        <input type="time" class="form-control iniciohorarioum" id="iniciohorarioum-\${id}"/>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <p class="title-categoria mb-0"><b>até as:*</b></p>
+                        <input type="time" class="form-control fimhorarioum" id="fimhorarioum-\${id}"/>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <p class="title-categoria mb-0"><b>e das:</b></p>
+                        <input type="time" class="form-control iniciohorariodois" id="iniciohorariodois-\${id}"/>
+                    </div>
+                </div>
+                <div class="col-3">
+                    <div class="form-group">
+                        <p class="title-categoria mb-0"><b>até as:</b></p>
+                        <input type="time" class="form-control fimhorariodois" id="fimhorariodois-\${id}"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-1 mt-2">
+            <a class="btn btn-red btn-sm mt-4" onclick="empresa.method.removerHorario('\${id}')">
+                <i class="fas fa-trash-alt"></i> 
+            </a>
+        </div>
+    `
 
 }

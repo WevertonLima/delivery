@@ -10,4 +10,10 @@ module.exports = (server) => {
         res.send(result);
     });
 
+     // salva os horários de funcionamento da empresa
+     server.post('/empresa/horario', Acesso.verificaTokenAcesso, async (req, res) => {
+        const result = await ct.controllers().salvarHorarios(req);
+        res.send(result);
+    });
+
 }

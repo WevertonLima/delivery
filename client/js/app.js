@@ -87,7 +87,7 @@ app.method = {
             }
         }
         catch (ex) {
-            return callbackError(null, null, ex);
+            return callbackError(ex);
         }
 
     },
@@ -147,7 +147,7 @@ app.method = {
             }
         }
         catch (ex) {
-            return callbackError(null, null, ex);
+            return callbackError(ex);
         }
 
     },
@@ -215,6 +215,7 @@ app.method = {
 
     },
 
+    // método que exibe o loader
     loading: (running = false) => {
 
         if (running) {
