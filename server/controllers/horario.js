@@ -43,12 +43,15 @@ const controllers = () => {
 
             var ComandoSQL = await readCommandSql.retornaStringSql('salvarHorario', 'horario');
 
+            const sleep = m => new Promise(r => setTimeout(r, m));
+
             // percorre os elementos e salva
             await Promise.all(
                 req.body.map(async (element) => {
                     console.log('salvar: ', element)
                     element.idempresa = _empresaId;
                     await db.Query(ComandoSQL, element);
+                    await sleep(500);
                 })
             )            
 

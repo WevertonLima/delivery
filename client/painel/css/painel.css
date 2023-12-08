@@ -758,7 +758,7 @@ div.dataTables_wrapper div.dataTables_filter label {
 .upload #drop-area {
     border: 2px dashed var(--color-primary);
     border-radius: 20px;
-    padding: 30px;
+    padding: 70px 30px;
     background: var(--color-white);
 }
 

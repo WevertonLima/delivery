@@ -117,7 +117,7 @@ sobre.method = {
                 }             
 
                 // valida o segundo horário
-                if (e.iniciohorariodois != null && e.fimhorariodois != null) {
+                if (e.iniciohorariodois != null && e.iniciohorariodois != '' && e.fimhorariodois != null && e.fimhorariodois != '') {
                     textoHorario += ` - ${e.iniciohorariodois} às ${e.fimhorariodois}`
                 }
 
