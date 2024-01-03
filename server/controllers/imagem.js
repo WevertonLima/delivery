@@ -151,7 +151,7 @@ const controllers = () => {
 
             const idImagemNovo = new Date().valueOf();
 
-            let name = imagem.name.split('.');
+            let name = imagem?.name?.split('.');
             const extension = name[name.length - 1];
 
             // nova imagem
