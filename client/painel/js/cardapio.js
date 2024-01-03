@@ -10,10 +10,13 @@ var PRODUTOS = [];
 var CATEGORIA_ID = 0;
 var PRODUTO_ID = 0;
 
+let DROP_AREA = document.getElementById("drop-area");
 
 cardapio.event = {
 
     init: () => {
+
+        app.method.validaToken();
 
         $("#categoriasMenu").sortable({
             scroll: false, // para não scrollar a tela
@@ -24,10 +27,32 @@ cardapio.event = {
             handle: ".drag-icon" // define a classe que pode receber o "drag and drop"
         });
 
-        $('.money').mask('#.##0,00', {reverse: true});
+        // máscara para o campo de valor
+        $('.money').mask('#.##0,00', { reverse: true });
 
         cardapio.method.carregarListaIcones();
         cardapio.method.obterCategorias();
+
+
+        // inicializa o drag e drop da imagem
+        // Previne os comportamenos padrão do navegador
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            DROP_AREA.addEventListener(eventName, cardapio.method.preventDefaults, false)
+            document.body.addEventListener(eventName, cardapio.method.preventDefaults, false)
+        });
+
+        // Evento quando passa o mouse em cima com a imagem segurada (Hover)
+        ['dragenter', 'dragover'].forEach(eventName => {
+            DROP_AREA.addEventListener(eventName, cardapio.method.highlight, false)
+        });
+
+        // Evento quando sai com o muse de cima
+        ['dragleave', 'drop'].forEach(eventName => {
+            DROP_AREA.addEventListener(eventName, cardapio.method.unhighlight, false)
+        });
+
+        // Evento quando solta a imagem no container
+        DROP_AREA.addEventListener('drop', cardapio.method.handleDrop, false)
 
     }
 
@@ -109,7 +134,7 @@ cardapio.method = {
 
         $.each(listacategorias, (i, e) => {
 
-            let idcategoria = $(e).attr('data-idcategoria');           
+            let idcategoria = $(e).attr('data-idcategoria');
 
             categorias.push({
                 idcategoria: idcategoria,
@@ -132,7 +157,7 @@ cardapio.method = {
                             return;
                         }
 
-                        app.method.mensagem(response.message, 'green');                       
+                        app.method.mensagem(response.message, 'green');
 
                     },
                     (error) => {
@@ -204,18 +229,31 @@ cardapio.method = {
             // percorre as categorias e adiciona na tela
             lista.forEach((e, i) => {
 
-                let _imagem = e.imagem;
+                let imagem = `style="background-image: url('/public/images/${e.imagem}'); background-size: cover;"`;
+
+                let btnEditar = 'hidden';
+                let btnRemover = 'hidden';
 
                 if (e.imagem == null) {
-                    _imagem = 'default.jpg';
+
+                    imagem = `style="background-image: url('/public/images/default.jpg'); background-size: cover;"`;
+
+                    // deixa o botão de Editar imagem visivel
+                    btnEditar = '';
+                }
+                else {
+                    // deixa o botão de Remover Imagem visivel 
+                    btnRemover = '';
                 }
 
                 let temp = cardapio.template.produto.replace(/\${id}/g, e.idproduto)
-                    .replace(/\${imagem}/g, _imagem)
+                    .replace(/\${imagem}/g, imagem)
                     .replace(/\${nome}/g, e.nome)
                     .replace(/\${descricao}/g, e.descricao)
                     .replace(/\${preco}/g, e.valor.toFixed(2).replace('.', ','))
                     .replace(/\${idcategoria}/g, idcategoria)
+                    .replace(/\${btnEditar}/g, btnEditar)
+                    .replace(/\${btnRemover}/g, btnRemover)
 
                 document.querySelector("#listaProdutos-" + idcategoria).innerHTML += temp;
 
@@ -258,7 +296,7 @@ cardapio.method = {
 
         // abre a modal
         $('#modalCategoria').modal({ backdrop: 'static' });
-        $('#modalCategoria').modal('show');       
+        $('#modalCategoria').modal('show');
 
     },
 
@@ -290,7 +328,7 @@ cardapio.method = {
         // seta a categoria selecionada, pra depois atualizar ela
         CATEGORIA_ID = idcategoria;
 
-        let categoria = CATEGORIAS.filter((e) => { return e.idcategoria == idcategoria});
+        let categoria = CATEGORIAS.filter((e) => { return e.idcategoria == idcategoria });
 
         // se existir a categoria, abre a modal
         if (categoria.length > 0) {
@@ -301,7 +339,7 @@ cardapio.method = {
 
             // abre a modal
             $('#modalCategoria').modal({ backdrop: 'static' });
-            $('#modalCategoria').modal('show');       
+            $('#modalCategoria').modal('show');
 
         }
 
@@ -468,7 +506,7 @@ cardapio.method = {
                             return;
                         }
 
-                        app.method.mensagem(response.message, 'green');                       
+                        app.method.mensagem(response.message, 'green');
 
                     },
                     (error) => {
@@ -482,7 +520,7 @@ cardapio.method = {
         })
 
     },
-    
+
     // método para abrir a modal de adicionar novo produto
     abrirModalAdicionarProduto: (idcategoria) => {
 
@@ -532,7 +570,7 @@ cardapio.method = {
         PRODUTO_ID = idproduto;
 
         // obtem o produto da lista global
-        let produto = PRODUTOS[idcategoria].filter((e) => { return e.idproduto == idproduto});
+        let produto = PRODUTOS[idcategoria].filter((e) => { return e.idproduto == idproduto });
 
         // se existir o produto, abre a modal
         if (produto.length > 0) {
@@ -546,7 +584,7 @@ cardapio.method = {
 
             // abre a modal
             $('#modalProduto').modal({ backdrop: 'static' });
-            $('#modalProduto').modal('show');       
+            $('#modalProduto').modal('show');
 
         }
 
@@ -573,6 +611,7 @@ cardapio.method = {
         }
 
         let dados = {
+            idcategoria: CATEGORIA_ID,
             idproduto: PRODUTO_ID,
             nome: nome,
             valor: valor,
@@ -682,7 +721,132 @@ cardapio.method = {
         )
 
     },
-        
+
+    // faz o upload da imagem do produto
+    uploadImagemProduto: (imagemUpload = []) => {
+
+        $('#modalUpload').modal('hide');
+
+        var formData = new FormData();
+
+        if (imagemUpload != undefined) {
+            formData.append('image', imagemUpload[0]);
+        }
+        else {
+            formData.append('image', document.querySelector('#fileElem').files[0]);
+        }
+
+        app.method.loading(true);
+
+        app.method.upload('/image/produto/upload/' + PRODUTO_ID, formData,
+            (response) => {
+                console.log(response)
+
+                app.method.loading(false);
+
+                if (response.status === 'error') {
+                    app.method.mensagem(response.message);
+                    return;
+                }
+
+                app.method.mensagem(response.message, 'green');
+                
+                // força o método de obter os produtos da categoria aberta
+                cardapio.method.obterProdutosCategoria(CATEGORIA_ID, true);
+                
+            },
+            (error) => {
+                app.method.loading(false);
+                console.log('error', error)
+            }
+        )
+
+    },
+
+    // remove a imagem do produto da empresa
+    removerImagemProduto: () => {
+
+        $('#modalRemoverImagemProduto').modal('hide');
+
+        var data = {
+            idproduto: PRODUTO_ID
+        }
+
+        app.method.loading(true);
+
+        app.method.post('/image/produto/remove', JSON.stringify(data),
+            (response) => {
+                console.log(response)
+
+                app.method.loading(false);
+
+                if (response.status === 'error') {
+                    app.method.mensagem(response.message);
+                    return;
+                }
+
+                app.method.mensagem(response.message, 'green');
+                
+                // força o método de obter os produtos da categoria aberta
+                cardapio.method.obterProdutosCategoria(CATEGORIA_ID, true);
+
+            },
+            (error) => {
+                app.method.loading(false);
+                console.log('error', error)
+            }
+        )
+
+    },
+
+    // abre a modal de adicionar imagem do produto
+    abrirModalImagemProduto: (idcategoria, idproduto) => {
+
+        CATEGORIA_ID = idcategoria;
+        PRODUTO_ID = idproduto;
+
+        // limpa o input de imagem
+        $('#fileElem').val(null);
+
+        $('#modalUpload').modal('show');
+
+    },
+
+    // abrir a modal de remover a imagem do produto
+    abrirModalremoverImagemProduto: (idcategoria, idproduto) => {
+
+        CATEGORIA_ID = idcategoria;
+        PRODUTO_ID = idproduto;
+
+        $('#modalRemoverImagemProduto').modal('show');
+
+    },
+
+    // DRAG AND DROP - previne os comportamentos padrões
+    preventDefaults: (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    },
+
+    // DRAG AND DROP - adiciona a classe 'highlight' quando entra com a imagem no container
+    highlight: (e) => {
+        if (!DROP_AREA.classList.contains('highlight')) {
+            DROP_AREA.classList.add('highlight');
+        }
+    },
+
+    // DRAG AND DROP - remove a classe 'highlight' quando sai com a imagem no container
+    unhighlight: (e) => {
+        DROP_AREA.classList.remove('highlight')
+    },
+
+    // DRAG AND DROP - quando soltar a imagem no container
+    handleDrop: (e) => {
+        var dt = e.dataTransfer
+        var files = dt.files
+        cardapio.method.uploadImagemProduto(files)
+    },
+
 
 }
 
@@ -722,9 +886,9 @@ cardapio.template = {
 
                     </div>
 
-                    <div class="card card-select mt-3">
+                    <div class="card card-select mt-3" onclick="cardapio.method.abrirModalAdicionarProduto('\${id}')">
                         <div class="infos-produto-opcional">
-                            <p class="mb-0 color-primary" onclick="cardapio.method.abrirModalAdicionarProduto('\${id}')">
+                            <p class="mb-0 color-primary">
                                 <i class="fas fa-plus-circle"></i>&nbsp; Adicionar novo produto
                             </p>
                         </div>
@@ -742,8 +906,11 @@ cardapio.template = {
                 <i class="fas fa-ellipsis-v"></i>
                 <i class="fas fa-ellipsis-v"></i>
             </div>
-            <div class="container-img-produto" style="background-image: url('/public/images/\${imagem}'); background-size: cover;">
-                <a href="#!" class="icon-action me-1 mb-1" data-toggle="tooltip" data-placement="top" title="Editar">
+            <div class="container-img-produto" \${imagem}>
+                <a id="btn-remover-imagem-\${id}" onclick="cardapio.method.abrirModalremoverImagemProduto('\${idcategoria}', '\${id}')" href="#!" class="icon-action me-1 mb-1 \${btnRemover}" data-toggle="tooltip" data-placement="top" title="Remover">
+                    <i class="fas fa-trash-alt"></i>
+                </a>
+                <a id="btn-editar-imagem-\${id}" onclick="cardapio.method.abrirModalImagemProduto('\${idcategoria}', '\${id}')" href="#!" class="icon-action me-1 mb-1 \${btnEditar}" data-toggle="tooltip" data-placement="top" title="Editar">
                     <i class="fas fa-pencil-alt"></i>
                 </a>
             </div>

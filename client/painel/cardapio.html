@@ -321,6 +321,56 @@
         </div>
     </div>
 
+    <div id="modalUpload" class="modal fade modal-cadastro" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-body">                
+                    <div class="row upload">
+
+                        <div id="drop-area">
+                            <form id="upload_form" class="my-form" enctype="multipart/form-data"> 
+                                <p><b>Arraste e solte a imagem aqui, ou</b></p>
+                                <input name="upload" type="file" id="fileElem" accept="image/*" onchange="cardapio.method.uploadImagemProduto(this.files)">
+                                <label class="btn btn-sm btn-yellow" for="fileElem">Carregar imagem</label>
+                            </form>
+                        </div>
+
+                    </div>                
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modalRemoverImagemProduto" class="modal fade modal-form" tabindex="-1" role="dialog" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title"><i class="fas fa-trash-alt"></i>&nbsp; <b>Remover Imagem</b></h5>
+            </div>
+            <div class="modal-body">
+                
+                <div class="row mb-5">
+
+                    <div class="col-12">
+                        <p>Deseja realmente <b>remover</b> a imagem do produto selecionado?</p>
+                    </div>
+
+                </div>                
+
+                <div class="footer-btn mt-3">
+                    <a href="#!" class="btn btn-red btn-sm me-3" onclick="cardapio.method.removerImagemProduto()">
+                        <i class="fas fa-trash-alt"></i>&nbsp; Remover Imagem
+                    </a>
+                    <button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>&nbsp; Cancelar
+                    </button>
+                </div>
+                
+            </div>
+          </div>
+        </div>
+    </div>
+
     <script type="text/javascript" src="../js/jquery.min.js"></script>
     <script type="text/javascript" src="../js/jquery-ui.js"></script>
     <script type="text/javascript" src="../js/bootstrap.bundle.min.js"></script>

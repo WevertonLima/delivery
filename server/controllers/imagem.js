@@ -10,47 +10,6 @@ const fs = require('fs');
 
 const controllers = () => {
 
-    // Faz o upload da imagem do Produto na pasta
-    const upload = async (req) => {
-
-        try {
-
-            const imagem = req.files.image;
-
-            let name = imagem.name.split('.');
-
-            const extension = name[name.length - 1];
-
-            const new_path = `server/public/images/${name[0]}.${extension}`
-
-            mv(imagem.path, new_path, {
-                mkdirp: true // se não exisir, cria o diretorio
-            }, (err, result) => {
-
-                if (err) {
-                    console.log('err', err)
-                    return false
-                }
-
-                console.log('result', result)
-
-            })
-
-            return {
-                status: 'success',
-                message: 'Imagem atualizada com sucesso!',
-            }
-
-        } catch (ex) {
-            console.log(ex)
-            return {
-                status: 'error',
-                message: 'Falha ao salvar imagem.',
-            }
-        }
-
-    }
-
     // Remove a imagem do Produto da pasta
     const remove = async (req) => {
 
@@ -182,12 +141,93 @@ const controllers = () => {
 
     }
 
+    // Faz o upload da Imagem do produto na pasta
+    const uploadImagemProduto = async (req) => {
+
+        try {
+
+            const idproduto = req.params.idproduto;
+            const imagem = req.files.image;
+
+            const idImagemNovo = new Date().valueOf();
+
+            let name = imagem.name.split('.');
+            const extension = name[name.length - 1];
+
+            // nova imagem
+            const new_path = `server/public/images/${idImagemNovo}-${name[0]}.${extension}`
+
+            mv(imagem.path, new_path, {
+                mkdirp: true // se não exisir, cria o diretorio
+            }, (err, result) => {
+
+                if (err) {
+                    console.log('err', err)
+                    return false
+                }
+
+                console.log('result', result)
+
+            })
+
+            var ComandoSQL = await readCommandSql.retornaStringSql('adicionarImagemProduto', 'produto');
+            await db.Query(ComandoSQL, { idproduto: idproduto, imagem: `${idImagemNovo}-${name[0]}.${extension}` });
+
+            return {
+                status: 'success',
+                message: 'Imagem atualizada com sucesso!',
+            }
+
+        } catch (ex) {
+            console.log(ex)
+            return {
+                status: 'error',
+                message: 'Falha ao salvar imagem.',
+            }
+        }
+
+    }
+
+    // Remove o Logotipo da pasta
+    const removeImagemProduto = async (req) => {
+
+        try {
+
+            // obtem o produto pelo id
+            var idproduto = req.body.idproduto;
+
+            var ComandoSQL = await readCommandSql.retornaStringSql('obterPorId', 'produto');
+            var dados_produto = await db.Query(ComandoSQL, { idproduto: idproduto });
+
+            var filePath = `server/public/images/${dados_produto[0].imagem}`; 
+            fs.unlinkSync(filePath);
+
+            var ComandoSQL = await readCommandSql.retornaStringSql('removerImagemProduto', 'produto');
+            await db.Query(ComandoSQL, { idproduto: idproduto });
+
+            return {
+                status: 'success',
+                message: 'Imagem removida com sucesso!',
+            }
+
+        } catch (ex) {
+            console.log('ex', ex)
+            return {
+                status: 'error',
+                message: 'Falha ao remover imagem.',
+            }
+        }
+
+    }
+
+
     return Object.create({
-        upload,
         remove,
         copy,
         uploadLogo,
-        removeLogo
+        removeLogo,
+        uploadImagemProduto,
+        removeImagemProduto
     })
 
 }

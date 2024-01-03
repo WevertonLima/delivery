@@ -124,3 +124,26 @@ WHERE
 	idproduto = @idproduto
 
 --END#atualizarProduto#
+
+
+--INIT#adicionarImagemProduto#
+
+UPDATE
+	produto
+SET
+	imagem = @imagem
+WHERE
+	idproduto = @idproduto
+
+--END#adicionarImagemProduto#
+
+--INIT#removerImagemProduto#
+
+UPDATE
+	produto
+SET
+	imagem = NULL
+WHERE
+	idproduto = @idproduto
+
+--END#removerImagemProduto#

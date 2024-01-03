@@ -33,16 +33,17 @@ empresa.event = {
             document.body.addEventListener(eventName, empresa.method.preventDefaults, false)
         });
 
-        // Highlight drop area when item is dragged over it
+        // Evento quando passa o mouse em cima com a imagem segurada (Hover)
         ['dragenter', 'dragover'].forEach(eventName => {
             DROP_AREA.addEventListener(eventName, empresa.method.highlight, false)
         });
 
+        // Evento quando sai com o muse de cima
         ['dragleave', 'drop'].forEach(eventName => {
             DROP_AREA.addEventListener(eventName, empresa.method.unhighlight, false)
         });
 
-        // Handle dropped files
+        // Evento quando solta a imagem no container
         DROP_AREA.addEventListener('drop', empresa.method.handleDrop, false)
 
         // inicia a mascara no CEP
