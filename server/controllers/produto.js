@@ -3,6 +3,8 @@ const db = new AcessoDados();
 const ReadCommandSql = require('../common/readCommandSql.js');
 const readCommandSql = new ReadCommandSql();
 
+const ctImagem = require('../controllers/imagem')
+
 const controllers = () => {
 
     // obtem a lista de produtos para exibir no cardápio
@@ -170,17 +172,27 @@ const controllers = () => {
 
             var idproduto = req.body.idproduto;
 
+            // cria um ID baseado na data e hora (para ser único), para passar pra imagem na hora de copiar
+            const idImagemNovo = new Date().valueOf();
+
             // obtem as informações do produto
 
             var ComandoSQLProduto = await readCommandSql.retornaStringSql('obterPorId', 'produto');
             var dados_produto = await db.Query(ComandoSQLProduto, { idproduto: idproduto });
 
-            // altera o nome para "Cópia" e insere no banco de dados
+            // guarda o valor da imagem antiga
+            const imagemOld = dados_produto[0].imagem;
 
+            // altera o nome para "Cópia" e o nome da imagem para o ID criado
             dados_produto[0].nome = dados_produto[0].nome + " - Cópia";
+            dados_produto[0].imagem = idImagemNovo + "-" + dados_produto[0].imagem;
 
+            // adiciona no banco
             var ComandoSQLAddProduto = await readCommandSql.retornaStringSql('adicionarProduto', 'produto');
             await db.Query(ComandoSQLAddProduto, dados_produto[0]);
+
+            // faz uma cópia da imagem para pasta
+            await ctImagem.controllers().copy(imagemOld, idImagemNovo);
 
             return {
                 status: 'success',
@@ -205,10 +217,24 @@ const controllers = () => {
 
             var idproduto = req.body.idproduto;
 
+            // obtem o produto (para pegar a url da imagem)
+            var ComandoSQLSelect = await readCommandSql.retornaStringSql('obterPorId', 'produto');
+            const produto = await db.Query(ComandoSQLSelect, { idproduto: idproduto });
+
             // remove o produto
 
             var ComandoSQL = await readCommandSql.retornaStringSql('removerPorProdutoId', 'produto');
             await db.Query(ComandoSQL, { idproduto: idproduto });
+
+            // remove a imagem do produto
+            // cria um objeto da mesma estrutura que o método espera
+            const requisicao = {
+                body: {
+                    imagem: produto[0].imagem
+                }
+            }
+
+            await ctImagem.controllers().remove(requisicao);
 
             return {
                 status: 'success',

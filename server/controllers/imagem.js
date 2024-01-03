@@ -75,6 +75,34 @@ const controllers = () => {
 
     }
 
+    // Copia a imagem do Produto na pasta (cria uma cópia)
+    const copy = async (imagem, id) => {
+
+        try {
+
+            // obtem a imagem atual
+            var inStr = fs.createReadStream(`server/public/images/${imagem}`);
+
+            // cria um "modelo" da imagem, com o ID na frente (passado nos parâmetros)
+            var outStr = fs.createWriteStream(`server/public/images/${id}-${imagem}`);
+
+            // aqui faz a cópia da imagem para o modelo, com o ID na frente (pra diferenciar)
+            inStr.pipe(outStr);
+            
+            return {
+                status: 'success',
+                message: 'Imagem duplicada com sucesso!',
+            }
+
+        } catch (ex) {
+            return {
+                status: 'error',
+                message: 'Falha ao duplicar imagem.',
+            }
+        }
+
+    }
+
     // Faz o upload do Logotipo na pasta
     const uploadLogo = async (req) => {
 
@@ -157,6 +185,7 @@ const controllers = () => {
     return Object.create({
         upload,
         remove,
+        copy,
         uploadLogo,
         removeLogo
     })

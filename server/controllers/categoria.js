@@ -3,6 +3,8 @@ const db = new AcessoDados();
 const ReadCommandSql = require('../common/readCommandSql.js');
 const readCommandSql = new ReadCommandSql();
 
+const ctImagem = require('../controllers/imagem')
+
 const controllers = () => {
 
     // Lista as categorias no cardápio
@@ -138,8 +140,6 @@ const controllers = () => {
 
             dados_categoria[0].nome = dados_categoria[0].nome + " - Cópia";
 
-            console.log('dados_categoria[0]', dados_categoria[0])
-
             var ComandoSQLAddCategoria = await readCommandSql.retornaStringSql('adicionarCategoria', 'categoria');
             var nova_categoria = await db.Query(ComandoSQLAddCategoria, dados_categoria[0]);
 
@@ -151,15 +151,20 @@ const controllers = () => {
 
                 const promises = await produtos_categoria.map(async elem => {
 
+                    const idImagemNovo = new Date().valueOf();
+
                     var ComandoSQLAddProduto = await readCommandSql.retornaStringSql('adicionarProduto', 'produto');
                     await db.Query(ComandoSQLAddProduto, {
                         idcategoria: nova_categoria.insertId,
                         nome: elem.nome,
                         descricao: elem.descricao,
                         valor: elem.valor,
-                        imagem: elem.imagem,
+                        imagem: idImagemNovo + "-" + elem.imagem,
                         ordem: elem.ordem
                     });
+
+                    // faz uma cópia da imagem para pasta
+                    await ctImagem.controllers().copy(elem.imagem, idImagemNovo);
 
                 })
 
@@ -197,7 +202,11 @@ const controllers = () => {
 
             var idcategoria = req.body.idcategoria;
 
-            // primeiro, remove todos os produtos da categoria
+            // obtem todos os produtos da categoria (para remover as imagens)
+            var ComandoSQLSelectProdutos = await readCommandSql.retornaStringSql('obterPorCategoriaIdSemOrdenacao', 'produto');
+            var produtos_categoria = await db.Query(ComandoSQLSelectProdutos, { idcategoria: idcategoria });
+
+            // agora remove todos os produtos da categoria
 
             var ComandoSQLProdutos = await readCommandSql.retornaStringSql('removerPorCategoriaId', 'produto');
             await db.Query(ComandoSQLProdutos, { idcategoria: idcategoria });
@@ -206,6 +215,24 @@ const controllers = () => {
 
             var ComandoSQLCategoria = await readCommandSql.retornaStringSql('removerPorId', 'categoria');
             await db.Query(ComandoSQLCategoria, { idcategoria: idcategoria });
+
+            // por fim, remove as imagens dos produtos da pasta
+
+            const promises = await produtos_categoria.map(async elem => {
+
+                // cria um objeto da mesma estrutura que o método espera
+                const requisicao = {
+                    body: {
+                        imagem: elem.imagem
+                    }
+                }
+
+                // remove a imagem
+                await ctImagem.controllers().remove(requisicao);
+
+            })
+
+            await Promise.all(promises);
 
             return {
                 status: 'success',
