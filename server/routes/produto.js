@@ -16,4 +16,34 @@ module.exports = (server) => {
         res.send(result);
     });
 
+    // obtem a lista de produtos por Categoria ID
+    server.get('/produto/categoria/:id', Acesso.verificaTokenAcesso, async (req, res) => {
+        const result = await ct.controllers().obterPorCategoriaId(req);
+        res.send(result);
+    });
+
+    // salva as informações do produto na página "Cardápio"
+    server.post('/produto', Acesso.verificaTokenAcesso, async (req, res) => {
+        const result = await ct.controllers().salvarDados(req);
+        res.send(result);
+    });
+
+    // salva a nova ordem dos produtos
+    server.post('/produto/ordenar', Acesso.verificaTokenAcesso, async (req, res) => {
+        const result = await ct.controllers().ordenarProdutos(req);
+        res.send(result);
+    });
+
+    // duplica o produto
+    server.post('/produto/duplicar', Acesso.verificaTokenAcesso, async (req, res) => {
+        const result = await ct.controllers().duplicarProduto(req);
+        res.send(result);
+    });
+
+    // remover o produto
+    server.post('/produto/remover', Acesso.verificaTokenAcesso, async (req, res) => {
+        const result = await ct.controllers().removerProduto(req);
+        res.send(result);
+    });
+
 }
