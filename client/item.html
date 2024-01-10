@@ -13,6 +13,10 @@
     </head>
     <body>
 
+        <div class="container-mensagens" id="container-mensagens">
+
+        </div>
+
         <div class="loader-full animated fadeIn hidden">
             <img src="./img/loader.png" width="100" class="animated pulse infinite" />
         </div>
@@ -35,128 +39,50 @@
         </header>
 
         <section class="imagem width-fix mt-4">
-            <div class="container-imagem-produto"
-                style="background-image: url('./img/calabresa.jpg'); background-size: cover;"></div>
+            <div class="container-imagem-produto" id="img-produto"></div>
             <div class="card mb-2">
                 <div class="d-flex">
                     <div class="infos-produto">
-                        <p class="name mb-2"><b>Calabresa</b></p>
-                        <p class="description mb-4">Molho de tomate, mussarela,
-                            cebola, calabresa, catupiry, tomate, orégano e
-                            azeitonas</p>
-                        <p class="price"><b>R$ 39,90</b></p>
+                        <p class="name mb-2"><b id="titulo-produto"></b></p>
+                        <p class="description mb-4" id="descricao-produto"></p>
+                        <p class="price"><b id="preco-produto"></b></p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="opcionais width-fix mt-5 pb-5">
+        <section class="opcionais width-fix mt-5" id="listaOpcionais">
 
-            <div class="container-group mb-5">
-                <span class="badge">Obrigatório</span>
-                <p class="title-categoria mb-0"><b>Deseja borda?</b></p>
-                <span class="sub-title-categoria">Escolha 1 opção</span>
-                <div class="card card-opcionais mt-2">
-                    <div class="infos-produto-opcional">
-                        <p class="name mb-0"><b>Catupiry</b></p>
-                        <p class="price mb-0"><b>+ R$ 8,90</b></p>
-                    </div>
-                    <div class="checks">
-                        <label class="container-check">
-                            <input type="checkbox" checked="checked">
-                            <span class="checkmark"></span>
-                        </label>
-                    </div>
-                </div>
-                <div class="card card-opcionais mt-2">
-                    <div class="infos-produto-opcional">
-                        <p class="name mb-0"><b>Cheddar</b></p>
-                        <p class="price mb-0"><b>+ R$ 8,90</b></p>
-                    </div>
-                    <div class="checks">
-                        <label class="container-check">
-                            <input type="checkbox">
-                            <span class="checkmark"></span>
-                        </label>
-                    </div>
-                </div>
+        </section>
+
+        <section class="opcionais-simples width-fix hidden" id="containerOpcionaisSimples">
+            <p class="title-categoria mb-0"><b>Opcionais</b></p>
+            <div class="container-group mb-5" id="listaOpcionaisSimples">
+                
             </div>
+        </section>
 
-            <div class="container-group mb-5">
-                <p class="title-categoria mb-0"><b>Adicionais</b></p>
-                <span class="sub-title-categoria">Escolha até 2 opções</span>
-                <div class="card card-opcionais mt-2">
-                    <div class="infos-produto-opcional">
-                        <p class="name mb-0"><b>Bacon</b></p>
-                        <p class="price mb-0"><b>+ R$ 8,90</b></p>
-                    </div>
-                    <div class="checks">
-                        <label class="container-check">
-                            <input type="checkbox">
-                            <span class="checkmark"></span>
-                        </label>
-                    </div>
-                </div>
-                <div class="card card-opcionais mt-2">
-                    <div class="infos-produto-opcional">
-                        <p class="name mb-0"><b>Cebola</b></p>
-                        <p class="price mb-0"><b>+ R$ 8,90</b></p>
-                    </div>
-                    <div class="checks">
-                        <label class="container-check">
-                            <input type="checkbox">
-                            <span class="checkmark"></span>
-                        </label>
-                    </div>
-                </div>
-                <div class="card card-opcionais mt-2">
-                    <div class="infos-produto-opcional">
-                        <p class="name mb-0"><b>Catupiry</b></p>
-                        <p class="price mb-0"><b>+ R$ 8,90</b></p>
-                    </div>
-                    <div class="checks">
-                        <label class="container-check">
-                            <input type="checkbox">
-                            <span class="checkmark"></span>
-                        </label>
-                    </div>
-                </div>
-                <div class="card card-opcionais mt-2">
-                    <div class="infos-produto-opcional">
-                        <p class="name mb-0"><b>Cheddar</b></p>
-                        <p class="price mb-0"><b>+ R$ 8,90</b></p>
-                    </div>
-                    <div class="checks">
-                        <label class="container-check">
-                            <input type="checkbox">
-                            <span class="checkmark"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
+        <section class="observacao width-fix pb-5">
             <div class="container-group mb-5">
                 <p class="title-categoria mb-0"><b>Observações</b></p>
-                <span class="sub-title-categoria">Informe alguma observação
-                    abaixo</span>
-                <textarea class="form-control mt-2" rows="4"></textarea>
+                <span class="sub-title-categoria">Informe alguma observação abaixo</span>
+                <textarea class="form-control mt-2" rows="4" id="txtObservacao"></textarea>
             </div>
-
         </section>
 
         <section class="menu-bottom details animated fadeIn delay-05s hidden" id="menu-bottom">
             <div class="add-carrinho">
                 <span class="btn-menos"
-                    onclick="cardapio.metodos.diminuirQuantidadeCarrinho('the-gramercy-tavern-burger-4-pack')"><i
+                    onclick="item.method.diminuirQuantidade()"><i
                         class="fas fa-minus"></i></span>
                 <span class="add-numero-itens"
-                    id="qntd-carrinho-the-gramercy-tavern-burger-4-pack">2</span>
+                    id="qntd-carrinho">1</span>
                 <span class="btn-mais"
-                    onclick="cardapio.metodos.aumentarQuantidadeCarrinho('the-gramercy-tavern-burger-4-pack')"><i
+                    onclick="item.method.aumentarQuantidade()"><i
                         class="fas fa-plus"></i></span>
             </div>
-            <a class="btn btn-yellow btn-sm">
-                Adicionar <span>R$ 49,90</span>
+            <a href="#!" class="btn btn-yellow btn-sm" onclick="item.method.adicionarAoCarrinho()">
+                Adicionar <span id="btn-preco-produto"></span>
             </a>
         </section>
 

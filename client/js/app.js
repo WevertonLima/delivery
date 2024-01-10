@@ -290,6 +290,13 @@ app.method = {
         }
         
 
-    }
+    },
+
+    // cria um id aleatório
+    criarGuid: () => {
+        return "00000000-0000-0000-0000-000000000000".replace(/[018]/g, c =>
+            (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+        );
+    },
 
 }

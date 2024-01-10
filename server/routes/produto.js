@@ -10,7 +10,7 @@ module.exports = (server) => {
         res.send(result);
     });
 
-    // obtem a lista de produtos para exibir no cardápio
+    // obtem o produto por id
     server.get('/produto/:id', async (req, res) => {
         const result = await ct.controllers().obterPorId(req);
         res.send(result);

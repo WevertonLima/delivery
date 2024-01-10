@@ -153,6 +153,7 @@ cardapio.method = {
             },
             (error) => {
                 console.log('error', error)
+                app.method.loading(false);
             }, true
         )
 

@@ -109,6 +109,7 @@
     </section>   
 
 
+    <!-- Modal Cadastro / Edição da Categoria -->
     <div id="modalCategoria" class="modal fade modal-form" tabindex="-1" role="dialog" data-backdrop="static">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -151,6 +152,7 @@
         </div>
     </div>
 
+    <!-- Modal de confirmação para Duplicar Categoria -->
     <div id="modalDuplicarCategoria" class="modal fade modal-form" tabindex="-1" role="dialog" data-backdrop="static">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -182,6 +184,7 @@
         </div>
     </div>
 
+    <!-- Modal de confirmação para Remover Categoria -->
     <div id="modalRemoverCategoria" class="modal fade modal-form" tabindex="-1" role="dialog" data-backdrop="static">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -213,7 +216,7 @@
         </div>
     </div>
 
-
+    <!-- Modal Cadastro / Edição do Produto -->
     <div id="modalProduto" class="modal fade modal-form" tabindex="-1" role="dialog" data-backdrop="static">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -261,6 +264,7 @@
         </div>
     </div>
 
+    <!-- Modal de confirmação para Duplicar Produto -->
     <div id="modalDuplicarProduto" class="modal fade modal-form" tabindex="-1" role="dialog" data-backdrop="static">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -291,6 +295,7 @@
         </div>
     </div>
 
+    <!-- Modal de confirmação para Remover Produto -->
     <div id="modalRemoverProduto" class="modal fade modal-form" tabindex="-1" role="dialog" data-backdrop="static">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -321,6 +326,7 @@
         </div>
     </div>
 
+    <!-- Modal para editar Imagem do Produto -->
     <div id="modalUpload" class="modal fade modal-cadastro" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -341,6 +347,7 @@
         </div>
     </div>
 
+    <!-- Modal de confirmação para Remover Imagem do Produto -->
     <div id="modalRemoverImagemProduto" class="modal fade modal-form" tabindex="-1" role="dialog" data-backdrop="static">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -364,6 +371,346 @@
                     <button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal" aria-label="Close">
                         <i class="fas fa-times"></i>&nbsp; Cancelar
                     </button>
+                </div>
+                
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <!-- Modal de Adicionais do Produto -->
+    <div id="modalOpcionaisProduto" class="modal fade modal-form" tabindex="-1" role="dialog" data-backdrop="static">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title"><b>Opcionais do Produto</b></h5>
+              <button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal" aria-label="Close">
+                <i class="fas fa-times"></i>&nbsp; Fechar
+              </button>
+            </div>
+            <div class="modal-body">
+                
+                <div class="row mb-5">
+
+                    <div class="col-12 opcionais" id="listaOpcionaisProduto">
+
+                        <div class="container-group mb-5">
+                            <span class="badge">Obrigatório</span>
+                            <p class="title-categoria mb-0"><b>Deseja borda?</b></p>
+                            <span class="sub-title-categoria">Escolha 1 opção</span>
+                            <div class="card card-opcionais mt-2">
+                                <div class="infos-produto-opcional">
+                                    <p class="name mb-0"><b>Catupiry</b></p>
+                                    <p class="price mb-0"><b>+ R$ 8,90</b></p>
+                                </div>
+                                <div class="checks">
+                                    <label class="container-check">
+                                        <input type="checkbox" checked="checked">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="card card-opcionais mt-2">
+                                <div class="infos-produto-opcional">
+                                    <p class="name mb-0"><b>Cheddar</b></p>
+                                    <p class="price mb-0"><b>+ R$ 8,90</b></p>
+                                </div>
+                                <div class="checks">
+                                    <label class="container-check">
+                                        <input type="checkbox">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <div class="container-group mb-5">
+                            <p class="title-categoria mb-0"><b>Adicionais</b></p>
+                            <span class="sub-title-categoria">Escolha até 2 opções</span>
+                            <div class="card card-opcionais mt-2">
+                                <div class="infos-produto-opcional">
+                                    <p class="name mb-0"><b>Bacon</b></p>
+                                    <p class="price mb-0"><b>+ R$ 8,90</b></p>
+                                </div>
+                                <div class="checks">
+                                    <label class="container-check">
+                                        <input type="checkbox">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="card card-opcionais mt-2">
+                                <div class="infos-produto-opcional">
+                                    <p class="name mb-0"><b>Cebola</b></p>
+                                    <p class="price mb-0"><b>+ R$ 8,90</b></p>
+                                </div>
+                                <div class="checks">
+                                    <label class="container-check">
+                                        <input type="checkbox">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="card card-opcionais mt-2">
+                                <div class="infos-produto-opcional">
+                                    <p class="name mb-0"><b>Catupiry</b></p>
+                                    <p class="price mb-0"><b>+ R$ 8,90</b></p>
+                                </div>
+                                <div class="checks">
+                                    <label class="container-check">
+                                        <input type="checkbox">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="card card-opcionais mt-2">
+                                <div class="infos-produto-opcional">
+                                    <p class="name mb-0"><b>Cheddar</b></p>
+                                    <p class="price mb-0"><b>+ R$ 8,90</b></p>
+                                </div>
+                                <div class="checks">
+                                    <label class="container-check">
+                                        <input type="checkbox">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                
+                    </div>
+
+                    <div class="col-12 mt-3">
+
+                        <div class="card card-select" onclick="cardapio.method.abrirModalAddOpcional()">
+                            <div class="infos-produto-opcional">
+                                <p class="mb-0 color-primary"><i class="fas fa-plus-circle"></i>&nbsp; Adicionar opcional</p>
+                            </div>
+                        </div>
+
+                    </div>
+                   
+                </div>    
+                <div id="addOpcional" class="addOpcional hidden">
+
+                    <div class="row">
+
+                        <div class="col-12">
+
+                            <p class="title-categoria mb-0"><b>Selecione o tipo de opcional:</b></p>
+
+                            <div class="container-group inline mb-3">
+                                <div class="card mt-3">
+                                    <div class="group-select">
+                                        <div class="checks">
+                                            <label class="container-check">
+                                                <input type="checkbox" checked="true">
+                                                <span class="checkmark"></span>
+                                                Opcional simples
+                                            </label> 
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card mt-3">
+                                    <div class="group-select">
+                                        <div class="checks">
+                                            <label class="container-check">
+                                                <input type="checkbox">
+                                                <span class="checkmark"></span>
+                                                Seleção de opções
+                                            </label> 
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="mt-5 float-right">    
+                        <a href="#!" class="btn btn-white btn-sm" onclick="cardapio.method.abrirContainerAddOpcional(false)">
+                            <i class="fas fa-times"></i>&nbsp; Cancelar
+                        </a>
+                        <a href="#!" class="btn btn-yellow btn-sm ms-2" onclick="cardapio.method.salvarProduto()">
+                            <i class="fas fa-check"></i>&nbsp; Salvar Opcional
+                        </a>
+                    </div>
+                    
+
+                </div>    
+
+                <div class="footer-btn mt-3">
+                    <!-- <a href="#!" class="btn btn-yellow btn-sm" onclick="cardapio.method.salvarProduto()">
+                        <i class="fas fa-check"></i>&nbsp; Salvar Produto
+                    </a> -->
+                </div>
+                
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <!-- Modal de Adicionar/Editar Opcionais do Produto -->
+    <div id="modalAddOpcionalProduto" class="modal fade modal-form" tabindex="-1" role="dialog" data-backdrop="static">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title"><b>Adicionar / Editar Opcional</b></h5>
+              <button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal" aria-label="Close">
+                <i class="fas fa-times"></i>&nbsp; Fechar
+              </button>
+            </div>
+            <div class="modal-body">
+                  
+                <div class="row mb-5">
+
+                    <div class="col-12">
+
+                        <p class="title-categoria mb-0"><b>Selecione o tipo de opcional:</b></p>
+
+                        <div class="container-group inline mb-3">
+                            <div class="card mt-3">
+                                <div class="group-select">
+                                    <div class="checks">
+                                        <label class="container-check">
+                                            <input id="chkOpcionalSimples" type="checkbox" checked="true" class="tipoOpcional" onchange="cardapio.method.changeTipoOpcional('chkOpcionalSimples')">
+                                            <span class="checkmark"></span>
+                                            Opcional simples
+                                        </label> 
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card mt-3">
+                                <div class="group-select">
+                                    <div class="checks">
+                                        <label class="container-check">
+                                            <input id="chkSelecaoOpcoes" type="checkbox" class="tipoOpcional" onchange="cardapio.method.changeTipoOpcional('chkSelecaoOpcoes')">
+                                            <span class="checkmark"></span>
+                                            Seleção de opções
+                                        </label> 
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="col-12 container-opcionais hidden" id="container-chkOpcionalSimples">
+
+                        <div class="row mt-4">
+
+                            <div class="col-9">
+                                <div class="form-group">
+                                    <p class="title-categoria mb-0"><b>Nome:</b></p>
+                                    <input id="txtNomeSimples" type="text" class="form-control" placeholder="Ex: Bacon" />
+                                </div>
+                            </div>
+
+                            <div class="col-3">
+                                <div class="form-group">
+                                    <p class="title-categoria mb-0"><b>Preço (R$):</b></p>
+                                    <input id="txtPrecoSimples" type="text" class="form-control money" placeholder="0,00" />
+                                </div>
+                            </div>
+
+                        </div>                        
+
+                    </div>
+
+                    <div class="col-12 container-opcionais hidden" id="container-chkSelecaoOpcoes">
+
+                        <div class="row mt-4">
+
+                            <div class="col-12">
+                                <div class="form-group mb-4">
+                                    <p class="title-categoria mb-0"><b>Título da seção:</b></p>
+                                    <input id="txtTituloSecao" type="text" class="form-control" placeholder="Ex: Deseja borda recheada?" value="Deseja borda recheada?" onkeyup="cardapio.method.changeTituloSecaoOpcao()" />
+                                </div>
+                            </div>
+
+                            <div class="col-2">
+                                <div class="form-group">
+                                    <p class="title-categoria mb-0"><b>Mínimo:</b></p>
+                                    <input id="txtMinimoOpcao" type="number" min="0" class="form-control" placeholder="0" value="0" onchange="cardapio.method.changeMinimoMaximoOpcao()" />
+                                </div>
+                            </div>
+
+                            <div class="col-2">
+                                <div class="form-group">
+                                    <p class="title-categoria mb-0"><b>Máximo:</b></p>
+                                    <input id="txtMaximoOpcao" type="number" min="1" class="form-control" placeholder="0" value="1" onchange="cardapio.method.changeMinimoMaximoOpcao()" />
+                                </div>
+                            </div>
+
+                            <div class="col-1">
+
+                            </div>
+
+                            <div class="col-6 flex-hint">
+                               
+                                <p class="title-categoria mb-0">
+                                    <b id="title-opcao-hint">Deseja borda recheada?</b>
+                                    <span class="badge badge-primary rascunho">Rascunho</span>
+                                </p>
+                                <span class="sub-title-categoria" id="text-opcao-hint">Escolha até 1 opção</span>
+                            </div>
+
+                            <div class="col-1">
+
+                            </div>
+
+                            <div class="col-12">
+                                <p class="title-categoria mb-4 mt-5"><b>Informe as opções:</b></p>
+                            </div>                            
+
+                            <div class="col-12" id="listaOpcoesSelecao">
+
+                                <div class="row linha mt-4" id="opcao-123">
+                                    <div class="col-8">
+                                        <div class="form-group">
+                                            <p class="title-categoria mb-0"><b>Nome:</b></p>
+                                            <input id="txtNomeSimples" type="text" class="form-control" placeholder="Ex: Bacon" />
+                                        </div>
+                                    </div>
+        
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            <p class="title-categoria mb-0"><b>Preço (R$):</b></p>
+                                            <input id="txtPrecoSimples" type="text" class="form-control money" placeholder="0,00" />
+                                        </div>
+                                    </div>
+
+                                    <div class="col-1">
+                                        <a href="#!" class="btn btn-red btn-sm mt-4" onclick="cardapio.method.removerLinhaOpcao('123')">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </a>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="col-12">
+                                <div class="card card-select mt-4" onclick="cardapio.method.adicionarLinhaOpcao()">
+                                    <div class="infos-produto-opcional">
+                                        <p class="mb-0 color-primary"><i class="fas fa-plus-circle"></i>&nbsp; Nova opção</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>    
+
+                    </div>
+
+                </div>
+
+                <div class="footer-btn mt-3">
+                    <a href="#!" class="btn btn-yellow btn-sm" onclick="cardapio.method.salvarOpcional()">
+                        <i class="fas fa-check"></i>&nbsp; Salvar Opcional
+                    </a>
                 </div>
                 
             </div>
