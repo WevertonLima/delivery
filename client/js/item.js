@@ -468,8 +468,11 @@ item.method = {
             cart = JSON.parse(carrinho);
         }
 
+        let guid = app.method.criarGuid();
+
         // adiciona o produto ao carrinho
         cart.itens.push({
+            guid: guid,
             idproduto: PRODUTO.idproduto,
             nome: PRODUTO.nome,
             imagem: PRODUTO.imagem,

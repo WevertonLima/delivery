@@ -14,6 +14,14 @@
 </head>
 <body>
 
+    <div class="container-mensagens" id="container-mensagens">
+
+    </div>
+
+    <div class="loader-full animated fadeIn hidden">
+        <img src="../img/loader.png" width="100" class="animated pulse infinite" />
+    </div>
+
     <section class="bg-menu">
 
         <div class="menu-left">
@@ -57,11 +65,11 @@
 
                             <div class="container-right">
                                 <div class="container-dados">
-                                    <p>Front.lee</p>
-                                    <span>frontlee.contato@gmail.com</span>
+                                    <p class="nome-empresa"></p>
+                                    <span class="email-empresa"></span>
                                 </div>
 
-                                <a href="#" class="btn btn-white btn-sm">
+                                <a href="#" class="btn btn-white btn-sm" onclick="app.method.logout()">
                                     <i class="fas fa-sign-out-alt"></i>&nbsp; Sair
                                 </a>
 
@@ -77,20 +85,20 @@
                         <div class="col-12">
                             
                             <div class="menus-config">
-                                <a href="#" class="btn btn-white btn-sm">
+                                <a href="#" class="btn btn-white btn-sm active tab-content" id="tab-delivery-retirada" onclick="config.method.openTab('delivery-retirada')">
                                     <i class="fas fa-shopping-bag"></i> Delivery e retirada
                                 </a>
-                                <a href="#" class="btn btn-white btn-sm">
+                                <a href="#" class="btn btn-white btn-sm tab-content" id="tab-taxa-entrega" onclick="config.method.openTab('taxa-entrega')">
                                     <i class="fas fa-motorcycle"></i> Taxa de entrega
                                 </a>
-                                <a href="#" class="btn btn-white btn-sm active">
+                                <a href="#" class="btn btn-white btn-sm tab-content" id="tab-forma-pagamento" onclick="config.method.openTab('forma-pagamento')">
                                     <i class="fas fa-coins"></i> Formas de pagamento
                                 </a>
                             </div>
 
                         </div>
 
-                        <div class="col-12 mt-5 hidden" id="delivery-retirada">
+                        <div class="col-12 mt-5 tab-item" id="delivery-retirada">
 
                             <p class="title-categoria mb-0"><b>Selecione as opções de entrega da sua loja</b></p>
                         
@@ -102,12 +110,12 @@
                                     <div class="infos config">
                                         <p class="name mb-1"><b>Retirada</b></p>
                                         <label class="switch">
-                                            <input type="checkbox">
+                                            <input type="checkbox" id="chkOpcaoRetirada" onchange="config.method.changeOpcaoRetirada()">
                                             <span class="slider round"></span>
-                                            <span class="text mb-0">Desligado</span>
+                                            <span class="text mb-0" id="lblSwitchRetirada">Desligado</span>
                                         </label>
                                     </div>
-                                    <div class="tempo disabled">
+                                    <div class="tempo disabled" id="containerTempoRetirada">
                                         <div class="form-group">
                                             <label for="txtTempoMinimoRetirada"><b>Tempo mínimo retirada (min)</b></label>
                                             <input id="txtTempoMinimoRetirada" type="number" class="form-control" placeholder="00" disabled/>
@@ -117,7 +125,7 @@
                                             <input id="txtTempoMaximoRetirada" type="number" class="form-control" placeholder="00" disabled/>
                                         </div>
                                     </div>
-                                    <a class="btn btn-yellow btn-sm ms-4 disabled">
+                                    <a href="#!" class="btn btn-yellow btn-sm ms-4 disabled" id="btnSalvarOpcaoRetirada" onclick="config.method.salvarOpcaoRetirada()">
                                         <i class="fas fa-check"></i>&nbsp; Salvar
                                     </a>
                                 </div>
@@ -132,18 +140,31 @@
                                     <div class="infos config">
                                         <p class="name mb-1"><b>Delivery</b></p>
                                         <label class="switch">
-                                            <input type="checkbox" checked>
+                                            <input type="checkbox" id="chkOpcaoDelivery" onchange="config.method.changeOpcaoDelivery()">
                                             <span class="slider round"></span>
-                                            <span class="text mb-0">Ligado</span>
+                                            <span class="text mb-0" id="lblSwitchDelivery">Desligado</span>
                                         </label>
                                     </div>
+                                    <div class="tempo disabled" id="containerTempoDelivery">
+                                        <div class="form-group">
+                                            <label for="txtTempoMinimoDelivery"><b>Tempo mínimo delivery (min)</b></label>
+                                            <input id="txtTempoMinimoDelivery" type="number" class="form-control" placeholder="00" disabled/>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="txtTempoMaximoDelivery"><b>Tempo máximo delivery (min)</b></label>
+                                            <input id="txtTempoMaximoDelivery" type="number" class="form-control" placeholder="00" disabled/>
+                                        </div>
+                                    </div>
+                                    <a href="#!" class="btn btn-yellow btn-sm ms-4 disabled" id="btnSalvarOpcaoDelivery" onclick="config.method.salvarOpcaoDelivery()">
+                                        <i class="fas fa-check"></i>&nbsp; Salvar
+                                    </a>
                                 </div>
 
                             </div>
 
                         </div>
 
-                        <div class="col-12 mt-5 hidden" id="taxa-entrega">
+                        <div class="col-12 mt-5 tab-item hidden" id="taxa-entrega">
 
                             <p class="title-categoria mb-0"><b>Selecione as opções de taxas de entrega</b></p>
 
@@ -299,7 +320,7 @@
 
                         </div>
 
-                        <div class="col-12 mt-5" id="forma-pagamento">
+                        <div class="col-12 mt-5 tab-item hidden" id="forma-pagamento">
 
                             <p class="title-categoria mb-0"><b>Selecione as formas de <b class="color-primary">pagamento na entrega</b></b></p>
 
@@ -312,7 +333,7 @@
                                         <p class="name mb-1"><b>Pix</b></p>
                                     </div>
                                     <label class="switch">
-                                        <input type="checkbox">
+                                        <input type="checkbox" id="chkFormaPagamento-pix" onchange="config.method.changeOpcaoFormaPagamento('1', 'pix')">
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
@@ -327,7 +348,7 @@
                                         <p class="name mb-1"><b>Dinheiro</b></p>
                                     </div>
                                     <label class="switch">
-                                        <input type="checkbox" checked>
+                                        <input type="checkbox" id="chkFormaPagamento-dinheiro" onchange="config.method.changeOpcaoFormaPagamento('2', 'dinheiro')">
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
@@ -342,7 +363,7 @@
                                         <p class="name mb-1"><b>Cartão de Crédito</b></p>
                                     </div>
                                     <label class="switch">
-                                        <input type="checkbox" checked>
+                                        <input type="checkbox" id="chkFormaPagamento-cartaocredito" onchange="config.method.changeOpcaoFormaPagamento('3', 'cartaocredito')">
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
@@ -357,7 +378,7 @@
                                         <p class="name mb-1"><b>Cartão de Débito</b></p>
                                     </div>
                                     <label class="switch">
-                                        <input type="checkbox" checked>
+                                        <input type="checkbox" id="chkFormaPagamento-cartaodebito" onchange="config.method.changeOpcaoFormaPagamento('4', 'cartaodebito')">
                                         <span class="slider round"></span>
                                     </label>
                                 </div>
@@ -389,12 +410,9 @@
 
     </section>
 
-
-    <script type="text/javascript" src="../js/jquery.min.js"></script>
-    <script type="text/javascript" src="../js/popper.min.js"></script>
-    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="../js/app.js"></script>
-    <script type="text/javascript" src="./js/login.js"></script>
+    <script type="text/javascript" src="./js/configuracoes.js"></script>
 
 </body> 
 </html>

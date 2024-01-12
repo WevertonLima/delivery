@@ -32,50 +32,9 @@ const controllers = () => {
 
     // Salva os dados da categoria
     const salvarOpcionaisProduto = async (req) => {
-
-        try {
-
-            // valida se é pra adicionar ou atualizar uma categoria
-
-            var idopcional = req.body.idopcional;
-
-            if (idopcional > 0) {
-
-                // atualizar opcional
-
-                var ComandoSQL = await readCommandSql.retornaStringSql('atualizarCategoria', 'categoria');
-                var result = await db.Query(ComandoSQL, req.body);
-
-                console.log(result);
-
-                return {
-                    status: "success",
-                    message: "Categoria atualizada com sucesso!"
-                }
-
-            }
-            else {
-
-                // adicionar categoria
-
-                var ComandoSQL = await readCommandSql.retornaStringSql('adicionarCategoria', 'categoria');
-                var result = await db.Query(ComandoSQL, req.body);
-
-                console.log(result);
-
-                return {
-                    status: "success",
-                    message: "Categoria adicionada com sucesso!"
-                }
-
-            }
-
-        } catch (ex) {
-            return {
-                status: "error",
-                message: "Falha ao salvar categoria. Tente novamente.",
-                ex: ex
-            }
+        return {
+            status: 'success',
+            data: {},
         }
 
     }

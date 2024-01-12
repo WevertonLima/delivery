@@ -11,6 +11,7 @@ cardapio.event = {
 
         cardapio.method.obterDadosEmpresa();
         cardapio.method.obterCategorias();
+        cardapio.method.obterItensCarrinho();
 
     }
 
@@ -218,6 +219,36 @@ cardapio.method = {
 
 
     },
+
+    // valida quantos itens tem no carrinho e exibe o icone
+    obterItensCarrinho: () => {
+
+        // primeiro, pega o carrinho que já existe no local
+        let carrinho = app.method.obterValorSessao('cart');
+
+        if (carrinho != undefined) {
+
+            let cart = JSON.parse(carrinho);
+
+            if (cart.itens.length > 0) {
+                document.querySelector("#icone-carrinho-vazio").classList.add('hidden');
+                document.querySelector("#total-carrinho").classList.remove('hidden');
+                document.querySelector("#total-carrinho").innerText = cart.itens.length;    
+            }
+            else {
+                document.querySelector("#icone-carrinho-vazio").classList.remove('hidden');
+                document.querySelector("#total-carrinho").classList.add('hidden');
+                document.querySelector("#total-carrinho").innerText = 0;
+            }
+
+        }
+        else {
+            document.querySelector("#icone-carrinho-vazio").classList.remove('hidden');
+            document.querySelector("#total-carrinho").classList.add('hidden');
+            document.querySelector("#total-carrinho").innerText = 0;
+        }
+
+    }
 
 }
 
