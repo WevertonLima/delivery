@@ -8,6 +8,11 @@ var PRODUTO_SELECIONADO = '';
 var CARRINHO_ATUAL = [];
 var TAXAS_ENTREGA = [];
 var TAXA_ATUAL = 0;
+var TAXA_ATUAL_ID = null;
+
+var FORMAS_PAGAMENTO = [];
+var FORMA_SELECIONADA = null;
+var TROCO = 0;
 
 var MODAL_ENDERECO = new bootstrap.Modal(document.getElementById('modalEndereco'));
 
@@ -15,10 +20,26 @@ carrinho.event = {
 
     init: () => {
 
+        // inicia a mascara no CEP
+        $('.cep').mask('00000-000');
+
+        // máscara para o campo de celular
+        var SPMaskBehavior = function (val) {
+            return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
+        },
+        spOptions = {
+        onKeyPress: function(val, e, field, options) {
+            field.mask(SPMaskBehavior.apply({}, arguments), options);
+            }
+        };
+    
+        $('.sp_celphones').mask(SPMaskBehavior, spOptions);
+
         carrinho.method.obterCarrinho();
         carrinho.method.obterTiposEntrega();
         carrinho.method.obterTaxaEntrega();
         carrinho.method.obterEndereco();
+        carrinho.method.obterFormasPagamento();
 
     }
 
@@ -160,6 +181,7 @@ carrinho.method = {
             }
 
             document.querySelector("#lblTotalCarrinho").innerText = `R$ ${(total).toFixed(2).replace('.', ',')}`;
+            document.querySelector("#lblTotalCarrinhoBotao").innerText = `R$ ${(total).toFixed(2).replace('.', ',')}`;
 
         }
 
@@ -304,6 +326,7 @@ carrinho.method = {
             document.querySelector("#containerTaxaEntrega").classList.add('hidden');
 
             TAXA_ATUAL = 0;
+            TAXA_ATUAL_ID = null;
             carrinho.method.atualizarValorTotal();
 
         }
@@ -328,6 +351,7 @@ carrinho.method = {
         }
 
         TAXA_ATUAL = 0;
+        TAXA_ATUAL_ID = null;
         carrinho.method.atualizarValorTotal();
 
     },
@@ -343,6 +367,7 @@ carrinho.method = {
         // Taxa Única
         if (TAXAS_ENTREGA[0].idtaxaentregatipo == 1) {
             TAXA_ATUAL = TAXAS_ENTREGA[0].valor;
+            TAXA_ATUAL_ID = TAXAS_ENTREGA[0].idtaxaentrega;
         }
 
         // Taxa por Distância
@@ -354,8 +379,6 @@ carrinho.method = {
             if (enderecoAtual != undefined) {
 
                 let endereco = JSON.parse(enderecoAtual);
-
-                carrinho.method.carregarEnderecoSelecionado(endereco);
 
                 // obtem a diferença da distnacia entre a loja e o endereço selecionado
                 let dados = {
@@ -377,6 +400,7 @@ carrinho.method = {
                         }
 
                         TAXA_ATUAL = response.taxa;
+                        TAXA_ATUAL_ID = response.idtaxa;
                         carrinho.method.atualizarValorTotal();
 
                     },
@@ -389,6 +413,7 @@ carrinho.method = {
             }
             else {
                 TAXA_ATUAL = 0;
+                TAXA_ATUAL_ID = null;
             }
 
         }
@@ -399,13 +424,6 @@ carrinho.method = {
         }
 
         carrinho.method.atualizarValorTotal();
-
-    },
-
-    // carrega o endereço na tela
-    carregarEnderecoSelecionado: (endereco) => {
-
-
 
     },
 
@@ -432,7 +450,6 @@ carrinho.method = {
         )
 
     },
-
 
 
     // ----------- ENDEREÇO ------------
@@ -637,6 +654,226 @@ carrinho.method = {
         carrinho.method.validarEnderecoSelecionado();
 
         document.querySelector('#modalActionsEndereco').classList.add('hidden');
+
+    },
+
+
+    // ----------- FORMAS DE PAGAMENTO ------------
+
+    // obtem as formas de pagamentos
+    obterFormasPagamento: () => {
+
+        app.method.get('/formapagamento',
+            (response) => {
+
+                console.log(response)
+
+                if (response.status == "error") {
+                    console.log(response.message)
+                    return;
+                }
+
+                FORMAS_PAGAMENTO = response.data;
+
+                carrinho.method.carregarFormasPagamento(response.data)
+
+            },
+            (error) => {
+                console.log('error', error)
+            }, true
+        )
+
+    },
+
+    // crrega as formas de pagamento na tela
+    carregarFormasPagamento: (list) => {
+
+        if (list.length > 0) {
+
+            list.forEach((e, i) => {
+
+                let temp = `<a href="#!" onclick="carrinho.method.selecionarFormaPagamento('${e.idformapagamento}')">${e.nome}</a>`;
+
+                // adiciona a categoria ao menu
+                document.querySelector("#modalActionsFormaPagamento .container-modal-actions").innerHTML += temp;
+
+                // último, adiciona o botão de remover
+                if ((i + 1) == list.length) {
+                    document.querySelector("#modalActionsFormaPagamento .container-modal-actions").innerHTML += `<a href="#!" class="color-red" onclick="carrinho.method.selecionarFormaPagamento('')">Remover</a>`;
+                }
+
+            })
+
+        }
+
+    },
+
+    // método que seleciona a forma de pagamento
+    selecionarFormaPagamento: (forma) => {
+
+        let selecionada = FORMAS_PAGAMENTO.filter(e => e.idformapagamento == forma);
+
+        TROCO = 0;
+
+        if (selecionada.length > 0) {
+
+            FORMA_SELECIONADA = selecionada[0];
+
+            document.querySelector("#cardFormaPagamentoSelecionada").classList.remove('hidden');
+            document.querySelector("#cardAddFormaPagamento").classList.add('hidden');
+
+            document.querySelector("#lblFormaPagamentoSelecionada").innerText = FORMA_SELECIONADA.nome;
+            
+            // se for Pix
+            if (FORMAS_PAGAMENTO.idformapagamento == 1) {
+                document.querySelector("#lblDescFormaPagamentoSelecionada").innerText = `Pagamento na entrega do pedido.`;
+                document.querySelector("#iconFormaPagamentoSelecionada").innerHTML = `<i class="fas fa-receipt"></i>`;
+            }
+            // se for dinheiro
+            else if (FORMA_SELECIONADA.idformapagamento == 2) {
+                let troco = prompt("Qual o valor do troco?");
+                if (troco != null) {
+                    document.querySelector("#lblDescFormaPagamentoSelecionada").innerText = `Troco para: ${troco} reais`;
+                    TROCO = parseFloat(troco);
+                }
+                else {
+                    document.querySelector("#lblDescFormaPagamentoSelecionada").innerText = `Pagamento na entrega do pedido.`;
+                }
+                
+                document.querySelector("#iconFormaPagamentoSelecionada").innerHTML = `<i class="fas fa-coins"></i>`;
+            }
+            // se for cartão
+            else {
+                document.querySelector("#lblDescFormaPagamentoSelecionada").innerText = `Pagamento na entrega do pedido.`;
+                document.querySelector("#iconFormaPagamentoSelecionada").innerHTML = `<i class="fas fa-credit-card"></i>`;
+            }
+
+        }
+        else {
+
+            document.querySelector("#cardFormaPagamentoSelecionada").classList.add('hidden');
+            document.querySelector("#cardAddFormaPagamento").classList.remove('hidden');
+
+            FORMA_SELECIONADA = null;
+
+        }
+
+        carrinho.method.fecharModalActionsFormaPagamento();
+
+    },
+
+    // abre as opções de formas de pagamento
+    abrirModalFormaPagamento: () => {
+        document.querySelector('#modalActionsFormaPagamento').classList.remove('hidden');
+    },  
+
+    // fecha a modal de formas de pagamento
+    fecharModalActionsFormaPagamento: () => {
+        document.querySelector('#modalActionsFormaPagamento').classList.add('hidden');
+    },
+
+
+    // ----------- REALIZAR PEDIDO ------------
+
+    // botão de realizar o pedido
+    fazerPedido: () => {
+
+        // faz as validações
+        if (CARRINHO_ATUAL.length > 0) {
+
+            let checkEntrega = document.querySelector('#chkEntrega').checked;
+            let checkRetirada = document.querySelector('#chkRetirada').checked;
+
+            if (!checkEntrega && !checkRetirada) {
+                app.method.mensagem("Selecione entrega ou retirada.")
+                return;
+            }
+
+            // obtem o endereço selecionado do local
+            let enderecoAtual = app.method.obterValorSessao('address');
+
+            if (checkEntrega && enderecoAtual == undefined) {
+                app.method.mensagem("Informe o endereço de entrega.")
+                return;
+            }
+
+            let enderecoSelecionado = enderecoAtual != undefined ? JSON.parse(enderecoAtual) : null;
+
+            let nome = $('#txtNomeSobrenome').val().trim();
+            let celular = $('#txtCelular').val().trim();
+
+            if (nome.length <= 0) {
+                app.method.mensagem("Informe o Nome e Sobrenome, por favor")
+                return;
+            }
+
+            if (celular.length <= 0) {
+                app.method.mensagem("Informe o Celular, por favor.")
+                return;
+            }
+
+            if (FORMA_SELECIONADA == null) {
+                app.method.mensagem("Selecione a forma de pagamento.")
+                return;
+            }
+
+            // tudo ok, faz o pedido
+
+            app.method.loading(true);
+
+            var dados = {
+                entrega: checkEntrega,
+                retirada: checkRetirada,
+                cart: CARRINHO_ATUAL,
+                endereco: enderecoSelecionado,
+                idtaxaentregatipo: TAXAS_ENTREGA[0].idtaxaentregatipo,
+                idtaxaentrega: TAXA_ATUAL_ID,
+                taxaentrega: TAXA_ATUAL,
+                idformapagamento: FORMA_SELECIONADA.idformapagamento,
+                troco: TROCO,
+                nomecliente: nome,
+                telefonecliente: celular
+            }
+
+            // realizar pedido
+            app.method.post('/pedido', JSON.stringify(dados),
+                (response) => {
+
+                    app.method.loading(false);
+    
+                    console.log('response', response)
+    
+                    if (response.status == "error") {
+                        console.log(response.message)
+                        return;
+                    }
+
+                    app.method.mensagem('Pedido realizado!', 'green');
+
+                    // salva o novo pedido
+                    dados.order = response.order;
+
+                    app.method.gravarValorSessao(JSON.stringify(dados), 'order');
+
+                    // envia pra tela de pedidos
+                    setTimeout(() => {
+                        // limpa o carrinho
+                        localStorage.removeItem("cart");
+                        window.location.href = '/pedido.html';
+                    }, 1000);
+
+                },
+                (error) => {    
+                    app.method.loading(false);
+                    console.log('error', error)
+                }, true
+            )
+
+        }
+        else {
+            app.method.mensagem("Nenhum item no carrinho.")
+        }
+
 
     },
 

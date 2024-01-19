@@ -137,35 +137,37 @@
                 <span class="badge">Obrigatório</span>
                 <p class="title-categoria mb-0"><b>Nome e Sobrenome</b></p>
                 <span class="sub-title-categoria">Como vamos te chamar?</span>
-                <input type="text" class="form-control mt-2" placeholder="* Informe o nome e sobrenome" />
+                <input id="txtNomeSobrenome" type="text" class="form-control mt-2" placeholder="* Informe o nome e sobrenome" />
             </div>
 
             <div class="container-group mb-5">
                 <span class="badge">Obrigatório</span>
                 <p class="title-categoria mb-0"><b>Número do seu celular</b></p>
                 <span class="sub-title-categoria">Para mais informações do pedido</span>
-                <input type="text" class="form-control mt-2" placeholder="(00) 0000-0000" />
+                <input id="txtCelular" type="text" class="form-control mt-2 sp_celphones" placeholder="(00) 0000-0000" />
             </div>
 
             <div class="container-group mb-5">
                 <span class="badge">Obrigatório</span>
                 <p class="title-categoria mb-0"><b>Como você vai pagar?</b></p>
                 <span class="sub-title-categoria">Pagamento na entrega</span>
-                <div class="card card-select mt-2">
+
+                <div class="card card-select mt-2" id="cardAddFormaPagamento" onclick="carrinho.method.abrirModalFormaPagamento()">
                     <div class="infos-produto-opcional">
                         <p class="mb-0 color-primary"><i class="fas fa-plus-circle"></i>&nbsp; Nenhuma forma selecionada</p>
                     </div>
                 </div>
-                <div class="card card-address mt-2">
-                    <div class="img-icon-details">
-                        <i class="fas fa-coins"></i>
+
+                <div class="card card-address mt-2 hidden" id="cardFormaPagamentoSelecionada">
+                    <div class="img-icon-details" id="iconFormaPagamentoSelecionada">
+                        <!-- <i class="fas fa-coins"></i> -->
                         <!-- <i class="fas fa-credit-card"></i> -->
                     </div>
                     <div class="infos">
-                        <p class="name mb-0"><b>Dinheiro</b></p>
-                        <span class="text mb-0">Troco para: R$ 50,00</span>
+                        <p class="name mb-0"><b id="lblFormaPagamentoSelecionada"></b></p>
+                        <span class="text mb-0" id="lblDescFormaPagamentoSelecionada"></span>
                     </div>
-                    <div class="icon-edit">
+                    <div class="icon-edit" onclick="carrinho.method.abrirModalFormaPagamento()">
                         <i class="fas fa-pencil-alt"></i>
                     </div>
                 </div>
@@ -173,8 +175,8 @@
 
         </section>
 
-        <a href="#!" class="btn btn-yellow btn-full hidden" id="btnFazerPedido">
-            Fazer pedido <span>R$ 106,50</span>
+        <a href="#!" class="btn btn-yellow btn-full hidden" id="btnFazerPedido" onclick="carrinho.method.fazerPedido()">
+            Fazer pedido <span id="lblTotalCarrinhoBotao"></span>
         </a>
 
         <a href="index.html" class="btn btn-yellow btn-full voltar hidden" id="btnVoltar">
@@ -311,7 +313,17 @@
             </div>
         </div>
 
+        <!-- Modal actions Pagamento -->
+        <div class="modal-actions hidden" id="modalActionsFormaPagamento">
+            <div class="backdrop" onclick="carrinho.method.fecharModalActionsFormaPagamento()"></div>
+            <div class="width-fix container-modal-actions">
+
+            </div>
+        </div>
+
+        <script type="text/javascript" src="./js/jquery.min.js"></script>
         <script type="text/javascript" src="./js/bootstrap.bundle.min.js"></script>
+        <script type="text/javascript" src="./js/jquery.mask.js"></script>
         <script type="text/javascript" src="./js/app.js"></script>
         <script type="text/javascript" src="./js/carrinho.js"></script>
 

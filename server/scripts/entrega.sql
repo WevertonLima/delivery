@@ -56,6 +56,7 @@ WHERE
 --INIT#obterValorTaxaPorKm#
 
 SELECT 
+    idtaxaentrega,
 	valor
 FROM 
 	taxaentrega

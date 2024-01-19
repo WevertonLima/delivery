@@ -10,4 +10,10 @@ module.exports = (server) => {
         res.send(result);
     });
 
+    // cria um novo pedido
+    server.post('/pedido', async (req, res) => {
+        const result = await ct.controllers().salvarPedido(req);
+        res.send(result);
+    });
+
 }

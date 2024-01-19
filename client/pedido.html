@@ -13,6 +13,10 @@
     </head>
     <body>
 
+        <div class="loader-full animated fadeIn hidden">
+            <img src="./img/loader.png" width="100" class="animated pulse infinite" />
+        </div>
+
         <div class="bg-top pedido"></div>
 
         <header class="width-fix mt-3">
@@ -30,7 +34,7 @@
             </div>
         </header>
 
-        <section class="pedido width-fix mt-4 hidden">
+        <section class="pedido width-fix mt-4 hidden" id="containerNenhumPedido">
             <div class="card card-status-pedido">
                 <div class="img-icon-details">
                     <i class="fas fa-utensils"></i>
@@ -42,7 +46,7 @@
             </div>
         </section>
 
-        <section class="pedido width-fix mt-4">
+        <section class="pedido width-fix mt-4 hidden" id="containerAcompanhamento">
             <div class="card card-status-pedido mb-4">
                 <div class="detalhes-produto">
                     <div class="infos-produto">
@@ -122,7 +126,7 @@
             
         </section>
 
-        <section class="menu-bottom">
+        <section class="menu-bottom animated fadeIn delay-05s hidden" id="menu-bottom">
             <a href="index.html" class="menu-bottom-item">
                 <i class="fas fa-book-open"></i>&nbsp; Cardápio
             </a>
@@ -130,19 +134,19 @@
                 <i class="fas fa-utensils"></i>&nbsp; Pedido
             </a>
             <a href="carrinho.html" class="menu-bottom-item">
-                <!-- <span>
-                <i class="fas fa-shopping-cart"></i>
-            </span> -->
-                <span class="badge-total-carrinho">2</span>
-                Carrinho
+                <span id="icone-carrinho-vazio" class="hidden"><i class="fas fa-shopping-cart"></i></span>
+                <span id="total-carrinho" class="badge-total-carrinho hidden"></span> 
+                &nbsp;Carrinho 
             </a>
         </section>
+    
+        <section class="menu-bottom animated fadeIn delay-05s disabled hidden" id="menu-bottom-closed">
+            <p class="mb-0"><b>Loja fechada no momento.</b></p>
+        </section>
 
-        <script type="text/javascript" src="js/jquery.min.js"></script>
-        <script type="text/javascript" src="js/popper.min.js"></script>
-        <script type="text/javascript" src="js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="js/app.js"></script>
-        <script type="text/javascript" src="js/pedido.js"></script>
+        <script type="text/javascript" src="./js/bootstrap.bundle.min.js"></script>
+        <script type="text/javascript" src="./js/app.js"></script>
+        <script type="text/javascript" src="./js/pedido.js"></script>
 
     </body>
 </html>

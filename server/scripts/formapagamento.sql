@@ -1,6 +1,7 @@
 --INIT#obterFormasPagamentoAtivas#
 
 SELECT
+	idformapagamento ,
 	nome
 FROM 
 	formapagamento
