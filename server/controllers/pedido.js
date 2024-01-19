@@ -236,11 +236,17 @@ const controllers = () => {
 
         try {
 
-            var pedido = req.body;
+            var hash = req.params.idpedido;
+            var idpedido = hash.toString().substr(13, hash.length);
+
+            console.log('idpedido', idpedido)
+
+            var ComandoSQL = await readCommandSql.retornaStringSql('obterPedidoPorId', 'pedido');
+            var pedido = await db.Query(ComandoSQL, {idpedido: idpedido});
 
             return {
-                status: 'error',
-                message: 'Falha ao realizar o pedido. Por favor, tente novamente.'
+                status: 'success',
+                data: pedido[0]
             }
 
         } catch (ex) {

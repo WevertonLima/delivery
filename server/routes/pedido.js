@@ -16,4 +16,10 @@ module.exports = (server) => {
         res.send(result);
     });
 
+    // obtem o pedido por id
+    server.get('/pedido/:idpedido', async (req, res) => {
+        const result = await ct.controllers().obterPedidoPorId(req);
+        res.send(result);
+    });
+
 }

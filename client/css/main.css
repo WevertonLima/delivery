@@ -802,3 +802,16 @@ p.quant-item {
 .color-red {
     color: var(--color-red);
 }
+
+.container-itens-pedido {
+    padding-top: 20px;
+}
+
+.container-itens-pedido .card-item {
+    padding: 5px 0px 10px 0px;
+    border-bottom: 1px dashed #cdcdcd;
+}
+
+.container-itens-pedido .card-item:last-child {
+    border: none;
+}

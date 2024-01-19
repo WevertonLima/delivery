@@ -23,9 +23,6 @@
             <div class="card">
 
                 <div class="d-flex">
-                    <a href="./index.html" class="container-voltar">
-                        <i class="fas fa-arrow-left"></i>
-                    </a>
                     <div class="infos text-center">
                         <h1 class="mb-0"><b>Acompanhar pedido</b></h1>
                     </div>
@@ -47,82 +44,6 @@
         </section>
 
         <section class="pedido width-fix mt-4 hidden" id="containerAcompanhamento">
-            <div class="card card-status-pedido mb-4">
-                <div class="detalhes-produto">
-                    <div class="infos-produto">
-                        <p class="name-total mb-0"><b>Pedido às 16:58</b></p>
-                        <p class="price-total mb-0"><b>R$ 106,50</b></p>
-                    </div>
-                </div>
-                <div class="detalhes-produto-acoes">
-                    <i class="fab fa-whatsapp"></i>
-                    <p class="mb-0 mt-1">Mensagem</p>
-                </div>
-                <div class="detalhes-produto-acoes">
-                    <i class="far fa-file-alt"></i>
-                    <p class="mb-0 mt-1">Ver Pedido</p>
-                </div>
-            </div>
-            <!-- <div class="card card-status-pedido cancelado mt-2">
-                <div class="img-icon-details">
-                    <i class="fas fa-times"></i>
-                </div>
-                <div class="infos">
-                    <p class="name mb-1"><b>Pedido cancelado!</b></p>
-                    <span class="text mb-0">O restaurante cancelou seu pedido. Desculpe o transtorno.</span>
-                </div>
-            </div> -->
-            <div class="card card-status-pedido active mt-2">
-                <div class="img-icon-details">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div class="infos">
-                    <p class="name mb-1"><b>Pedido enviado!</b></p>
-                    <span class="text mb-0">Aguardando a confirmação da loja</span>
-                </div>
-            </div>
-            <!-- <div class="card card-status-pedido active mt-2">
-                <div class="img-icon-details">
-                    <i class="fas fa-utensils"></i>
-                </div>
-                <div class="infos">
-                    <p class="name mb-1"><b>Preparando</b></p>
-                    <span class="text mb-0">Seu pedido está sendo preparado</span>
-                </div>
-            </div> -->
-            <!-- <div class="card card-status-pedido active mt-2">
-                <div class="img-icon-details">
-                   <i class="fas fa-box"></i>
-                </div>
-                <div class="infos">
-                    <p class="name mb-1"><b>Pedido pronto!</b></p>
-                    <span class="text mb-0">Seu pedido já pode ser retirado!</span>
-                </div>
-            </div> -->
-            <div class="card card-status-pedido pending mt-2">
-                <div class="img-icon-details status">
-                    <i class="fas fa-utensils"></i>
-                </div>
-                <div class="infos">
-                    <p class="name mb-0"><b>Preparando</b></p>
-                </div>
-            </div>
-            <div class="card card-status-pedido pending mt-2">
-                <div class="img-icon-details status">
-                    <i class="fas fa-motorcycle"></i>
-                </div>
-                <div class="infos">
-                    <p class="name mb-0"><b>Indo até você</b></p>
-                </div>
-            </div>
-            <!-- <div class="card card-status-pedido pending mt-2">
-                <div class="img-icon-details status">
-                    <i class="fas fa-box"></i>
-                </div>
-                <div class="infos">
-                    <p class="name mb-0"><b>Pronto para retirada</b></p>
-                </div>
-            </div> -->
             
         </section>
 
@@ -143,6 +64,64 @@
         <section class="menu-bottom animated fadeIn delay-05s disabled hidden" id="menu-bottom-closed">
             <p class="mb-0"><b>Loja fechada no momento.</b></p>
         </section>
+
+        <div id="modalDetalhes" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title"><b>Detalhes do pedido</b></h5>
+                  <button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal" aria-label="Close" onclick="pedido.method.fecharModalDetalhesPedido()">
+                    <i class="fas fa-times"></i>&nbsp; Fechar
+                  </button>
+                </div>
+                <div class="modal-body">
+                  
+                    <div class="container-dados-pedido pt-1">
+                        <div class="row">
+    
+                            <div class="col-12">
+                                <div class="card card-address cursor-default">
+                                    <div class="img-icon-details status">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="infos pr-0">
+                                        <div class="d-flex">
+                                            <p class="name mb-0 me-2"><b id="lblNomeCliente"></b></p>
+                                        </div>
+                                        <div class="d-flex">
+                                            <span class="info-pedido" id="lblTelefoneCliente">
+                                            </span>
+                                       </div>
+                                    </div>
+                                </div>
+                            </div>
+    
+                            <div class="col-12">
+                                <div class="card card-address cursor-default mt-2">
+                                    <div class="img-icon-details status" id="lblFormaPagamentoIcon">
+                                    </div>
+                                    <div class="infos">
+                                        <p class="name mb-0"><b id="lblFormaPagamentoTitulo"></b></p>
+                                        <span class="text mb-0" id="lblFormaPagamentoDescricao"></span>
+                                    </div>
+                                </div>
+                            </div>
+        
+                        </div>
+                    </div>
+    
+                    <div class="container-itens-pedido carrinho">
+    
+                        <div id="itensPedido">
+    
+                        </div>
+    
+                    </div>
+    
+                </div>
+              </div>
+            </div>
+        </div>
 
         <script type="text/javascript" src="./js/bootstrap.bundle.min.js"></script>
         <script type="text/javascript" src="./js/app.js"></script>
