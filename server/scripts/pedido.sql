@@ -35,6 +35,7 @@ INSERT INTO
 
 SELECT
     p.idpedidostatus
+    ,p.idpedidoincre
     , ps.descricao AS pedidostatus
     , p.idtipoentrega
     , p.idtaxaentrega

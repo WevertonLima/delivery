@@ -1,630 +1,652 @@
 document.addEventListener("DOMContentLoaded", function (event) {
-    empresa.event.init();
+  empresa.event.init();
 });
 
 var empresa = {};
 var DADOS_EMPRESA = {};
 
-var MODAL_UPLOAD = new bootstrap.Modal(document.getElementById('modalUpload'));
+var MODAL_UPLOAD = new bootstrap.Modal(document.getElementById("modalUpload"));
 
 let DROP_AREA = document.getElementById("drop-area");
 
 empresa.event = {
+  init: () => {
+    app.method.loading(true);
+    app.method.validaToken();
+    app.method.carregarDadosEmpresa();
 
-    init: () => {
+    var tooltipTriggerList = [].slice.call(
+      document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    );
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
 
-        app.method.loading(true);
-        app.method.validaToken();
-        app.method.carregarDadosEmpresa();
+    // inicia a primeira Tab
+    empresa.method.openTab("sobre");
 
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        })
+    // inicializa o drag e drop da imagem
 
-        // inicia a primeira Tab
-        empresa.method.openTab('sobre');
+    // Previne os comportamenos padrão do navegador
+    ["dragenter", "dragover", "dragleave", "drop"].forEach((eventName) => {
+      DROP_AREA.addEventListener(
+        eventName,
+        empresa.method.preventDefaults,
+        false
+      );
+      document.body.addEventListener(
+        eventName,
+        empresa.method.preventDefaults,
+        false
+      );
+    });
 
-        // inicializa o drag e drop da imagem
+    // Evento quando passa o mouse em cima com a imagem segurada (Hover)
+    ["dragenter", "dragover"].forEach((eventName) => {
+      DROP_AREA.addEventListener(eventName, empresa.method.highlight, false);
+    });
 
-        // Previne os comportamenos padrão do navegador
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            DROP_AREA.addEventListener(eventName, empresa.method.preventDefaults, false)
-            document.body.addEventListener(eventName, empresa.method.preventDefaults, false)
-        });
+    // Evento quando sai com o muse de cima
+    ["dragleave", "drop"].forEach((eventName) => {
+      DROP_AREA.addEventListener(eventName, empresa.method.unhighlight, false);
+    });
 
-        // Evento quando passa o mouse em cima com a imagem segurada (Hover)
-        ['dragenter', 'dragover'].forEach(eventName => {
-            DROP_AREA.addEventListener(eventName, empresa.method.highlight, false)
-        });
+    // Evento quando solta a imagem no container
+    DROP_AREA.addEventListener("drop", empresa.method.handleDrop, false);
 
-        // Evento quando sai com o muse de cima
-        ['dragleave', 'drop'].forEach(eventName => {
-            DROP_AREA.addEventListener(eventName, empresa.method.unhighlight, false)
-        });
+    // inicia a mascara no CEP
+    $(".cep").mask("00000-000");
 
-        // Evento quando solta a imagem no container
-        DROP_AREA.addEventListener('drop', empresa.method.handleDrop, false)
+    // máscara para o campo de celular
+    var SPMaskBehavior = function (val) {
+        return val.replace(/\D/g, "").length === 11
+          ? "(00) 00000-0000"
+          : "(00) 0000-00009";
+      },
+      spOptions = {
+        onKeyPress: function (val, e, field, options) {
+          field.mask(SPMaskBehavior.apply({}, arguments), options);
+        },
+      };
 
-        // inicia a mascara no CEP
-        $('.cep').mask('00000-000');
-
-    }
-
-}
+    $(".sp_celphones").mask(SPMaskBehavior, spOptions);
+  },
+};
 
 empresa.method = {
+  openTab: (tab) => {
+    Array.from(document.querySelectorAll(".tab-content")).forEach((e) =>
+      e.classList.remove("active")
+    );
+    Array.from(document.querySelectorAll(".tab-item")).forEach((e) =>
+      e.classList.add("hidden")
+    );
 
-    openTab: (tab) => {
+    document.querySelector("#tab-" + tab).classList.add("active");
+    document.querySelector("#" + tab).classList.remove("hidden");
 
-        Array.from(document.querySelectorAll(".tab-content")).forEach(e => e.classList.remove('active'));
-        Array.from(document.querySelectorAll(".tab-item")).forEach(e => e.classList.add('hidden'));
+    switch (tab) {
+      case "sobre":
+        empresa.method.obterDados();
+        break;
 
-        document.querySelector("#tab-" + tab).classList.add('active');
-        document.querySelector("#" + tab).classList.remove('hidden');
+      case "endereco":
+        empresa.method.obterDados();
+        break;
 
-        switch (tab) {
-            case 'sobre':
-                empresa.method.obterDados();
-                break;
+      case "horario":
+        empresa.method.obterHorarios();
+        break;
 
-            case 'endereco':
-                empresa.method.obterDados();
-                break;
+      default:
+        break;
+    }
+  },
 
-            case 'horario':
-                empresa.method.obterHorarios();
-                break;
+  // obtem os dados da empresa
+  obterDados: () => {
+    app.method.loading(true);
 
-            default:
-                break;
+    app.method.get(
+      "/empresa/sobre",
+      (response) => {
+        app.method.loading(false);
+
+        if (response.status == "error") {
+          console.log(response.message);
+          return;
         }
 
-    },
+        let empresa = response.data[0];
 
-    // obtem os dados da empresa
-    obterDados: () => {
+        DADOS_EMPRESA = empresa;
 
-        app.method.loading(true);
+        console.log("empresa", empresa);
 
-        app.method.get('/empresa/sobre',
-            (response) => {
+        // carrega a TAB sobre
 
-                app.method.loading(false);
-
-                if (response.status == "error") {
-                    console.log(response.message)
-                    return;
-                }
-
-                let empresa = response.data[0];
-
-                DADOS_EMPRESA = empresa;
-
-                console.log('empresa', empresa)
-
-                // carrega a TAB sobre
-
-                if (empresa.logotipo != null) {
-                    document.getElementById("img-empresa").style.backgroundImage = `url('../public/images/empresa/${empresa.logotipo}')`;
-                    document.getElementById("img-empresa").style.backgroundSize = "70%";
-                    document.getElementById("btn-remover-logo").classList.remove('hidden');
-                    document.getElementById("btn-editar-logo").classList.add('hidden');
-                }
-                else {
-                    document.getElementById("img-empresa").style.backgroundImage = `url('../public/images/empresa/default.jpg')`;
-                    document.getElementById("img-empresa").style.backgroundSize = "cover";
-                    document.getElementById("btn-remover-logo").classList.add('hidden');
-                    document.getElementById("btn-editar-logo").classList.remove('hidden');
-                }
-
-                document.getElementById("txtNomeEmpresa").value = empresa.nome;
-                document.getElementById("txtSobreEmpresa").innerHTML = empresa.sobre.replace(/\n/g, '\r\n');
-
-                // carrega a TAB endereço
-
-                document.getElementById("txtCEP").value = empresa.cep;
-                document.getElementById("txtEndereco").value = empresa.endereco;
-                document.getElementById("txtBairro").value = empresa.bairro;
-                document.getElementById("txtNumero").value = empresa.numero;
-                document.getElementById("txtCidade").value = empresa.cidade;
-                document.getElementById("txtComplemento").value = empresa.complemento;
-                document.getElementById("ddlUf").value = empresa.estado;
-
-            },
-            (error) => {
-                app.method.loading(false);
-                console.log('error', error)
-            }
-        )
-
-    },
-
-    // valida os campos e salva os dados da empresa (TAB sobre)
-    salvarDadosSobre: () => {
-
-        let nome = document.getElementById("txtNomeEmpresa").value.trim();
-        let sobre = document.getElementById("txtSobreEmpresa").value.trim();
-
-        if (nome.length <= 0) {
-            app.method.mensagem('Informe o nome da empresa, por favor.');
-            document.getElementById("txtNomeEmpresa").focus();
-            return;
+        if (empresa.logotipo != null) {
+          document.getElementById(
+            "img-empresa"
+          ).style.backgroundImage = `url('../public/images/empresa/${empresa.logotipo}')`;
+          document.getElementById("img-empresa").style.backgroundSize = "70%";
+          document
+            .getElementById("btn-remover-logo")
+            .classList.remove("hidden");
+          document.getElementById("btn-editar-logo").classList.add("hidden");
+        } else {
+          document.getElementById(
+            "img-empresa"
+          ).style.backgroundImage = `url('../public/images/empresa/default.jpg')`;
+          document.getElementById("img-empresa").style.backgroundSize = "cover";
+          document.getElementById("btn-remover-logo").classList.add("hidden");
+          document.getElementById("btn-editar-logo").classList.remove("hidden");
         }
 
-        let dados = {
-            nome: nome,
-            sobre: sobre
+        document.getElementById("txtNomeEmpresa").value = empresa.nome;
+        document.getElementById("txtSobreEmpresa").innerHTML =
+          empresa.sobre.replace(/\n/g, "\r\n");
+
+        // carrega a TAB endereço
+
+        document.getElementById("txtCEP").value = empresa.cep;
+        document.getElementById("txtEndereco").value = empresa.endereco;
+        document.getElementById("txtBairro").value = empresa.bairro;
+        document.getElementById("txtNumero").value = empresa.numero;
+        document.getElementById("txtCidade").value = empresa.cidade;
+        document.getElementById("txtComplemento").value = empresa.complemento;
+        document.getElementById("ddlUf").value = empresa.estado;
+      },
+      (error) => {
+        app.method.loading(false);
+        console.log("error", error);
+      }
+    );
+  },
+
+  // valida os campos e salva os dados da empresa (TAB sobre)
+  salvarDadosSobre: () => {
+    let nome = document.getElementById("txtNomeEmpresa").value.trim();
+    let sobre = document.getElementById("txtSobreEmpresa").value.trim();
+
+    if (nome.length <= 0) {
+      app.method.mensagem("Informe o nome da empresa, por favor.");
+      document.getElementById("txtNomeEmpresa").focus();
+      return;
+    }
+
+    let dados = {
+      nome: nome,
+      sobre: sobre,
+    };
+
+    app.method.loading(true);
+
+    app.method.post(
+      "/empresa/sobre",
+      JSON.stringify(dados),
+      (response) => {
+        console.log(response);
+
+        app.method.loading(false);
+
+        if (response.status === "error") {
+          app.method.mensagem(response.message);
+          return;
         }
 
-        app.method.loading(true);
+        app.method.mensagem(response.message, "green");
 
-        app.method.post('/empresa/sobre', JSON.stringify(dados),
-            (response) => {
-                console.log(response)
+        // atualiza o localStorage
+        app.method.gravarValorSessao(nome, "Nome");
 
-                app.method.loading(false);
+        empresa.method.obterDados();
+        app.method.carregarDadosEmpresa();
+      },
+      (error) => {
+        app.method.loading(false);
+        console.log("error", error);
+      }
+    );
+  },
 
-                if (response.status === 'error') {
-                    app.method.mensagem(response.message);
-                    return;
-                }
+  // adiciona a nova logotipo da empresa
+  uploadLogo: (logoUpload = []) => {
+    MODAL_UPLOAD.hide();
 
-                app.method.mensagem(response.message, 'green');
+    var formData = new FormData();
 
-                // atualiza o localStorage
-                app.method.gravarValorSessao(nome, "Nome");
+    if (logoUpload != undefined) {
+      formData.append("image", logoUpload[0]);
+    } else {
+      formData.append("image", document.querySelector("#fileElem").files[0]);
+    }
 
-                empresa.method.obterDados();
-                app.method.carregarDadosEmpresa();
-            },
-            (error) => {
-                app.method.loading(false);
-                console.log('error', error)
-            }
-        )
+    app.method.loading(true);
 
-    },
+    app.method.upload(
+      "/image/logo/upload",
+      formData,
+      (response) => {
+        console.log(response);
 
-    // adiciona a nova logotipo da empresa
-    uploadLogo: (logoUpload = []) => {
+        app.method.loading(false);
 
-        MODAL_UPLOAD.hide();
-
-        var formData = new FormData();
-
-        if (logoUpload != undefined) {
-            formData.append('image', logoUpload[0]);
-        }
-        else {
-            formData.append('image', document.querySelector('#fileElem').files[0]);
-        }
-
-        app.method.loading(true);
-
-        app.method.upload('/image/logo/upload', formData,
-            (response) => {
-                console.log(response)
-
-                app.method.loading(false);
-
-                if (response.status === 'error') {
-                    app.method.mensagem(response.message);
-                    return;
-                }
-
-                app.method.mensagem(response.message, 'green');
-
-                // atualiza o localStorage
-                app.method.gravarValorSessao(response.logotipo, "Logo");
-
-                empresa.method.obterDados();
-                app.method.carregarDadosEmpresa();
-            },
-            (xhr, ajaxOptions, error) => {
-                app.method.loading(false);
-                console.log('xhr', xhr)
-                console.log('ajaxOptions', ajaxOptions)
-                console.log('error', error)
-            }
-        )
-
-    },
-
-    // remove o logotipo da empresa
-    removeLogo: () => {
-
-        var data = {
-            imagem: DADOS_EMPRESA.logotipo
+        if (response.status === "error") {
+          app.method.mensagem(response.message);
+          return;
         }
 
-        app.method.loading(true);
+        app.method.mensagem(response.message, "green");
 
-        app.method.post('/image/logo/remove', JSON.stringify(data),
-            (response) => {
-                console.log(response)
+        // atualiza o localStorage
+        app.method.gravarValorSessao(response.logotipo, "Logo");
 
-                app.method.loading(false);
+        empresa.method.obterDados();
+        app.method.carregarDadosEmpresa();
+      },
+      (xhr, ajaxOptions, error) => {
+        app.method.loading(false);
+        console.log("xhr", xhr);
+        console.log("ajaxOptions", ajaxOptions);
+        console.log("error", error);
+      }
+    );
+  },
 
-                if (response.status === 'error') {
-                    app.method.mensagem(response.message);
-                    return;
-                }
+  // remove o logotipo da empresa
+  removeLogo: () => {
+    var data = {
+      imagem: DADOS_EMPRESA.logotipo,
+    };
 
-                app.method.mensagem(response.message, 'green');
+    app.method.loading(true);
 
-                app.method.removerSessao('Logo');
+    app.method.post(
+      "/image/logo/remove",
+      JSON.stringify(data),
+      (response) => {
+        console.log(response);
 
-                empresa.method.obterDados();
-                app.method.carregarDadosEmpresa();
-            },
-            (xhr, ajaxOptions, error) => {
-                app.method.loading(false);
-                console.log('xhr', xhr)
-                console.log('ajaxOptions', ajaxOptions)
-                console.log('error', error)
-            }
-        )
+        app.method.loading(false);
 
-    },
-
-    // abre a modal de adicionar logo
-    openModalLogo: () => {
-
-        MODAL_UPLOAD.show();
-
-    },
-
-    // DRAG AND DROP - previne os comportamentos padrões
-    preventDefaults: (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-    },
-
-    // DRAG AND DROP - adiciona a classe 'highlight' quando entra com a imagem no container
-    highlight: (e) => {
-        if (!DROP_AREA.classList.contains('highlight')) {
-            DROP_AREA.classList.add('highlight');
-        }
-    },
-
-    // DRAG AND DROP - remove a classe 'highlight' quando sai com a imagem no container
-    unhighlight: (e) => {
-        DROP_AREA.classList.remove('highlight')
-    },
-
-    // DRAG AND DROP - quando soltar a imagem no container
-    handleDrop: (e) => {
-        var dt = e.dataTransfer
-        var files = dt.files
-
-        console.log('files', files)
-        empresa.method.uploadLogo(files)
-    },
-
-    // API ViaCEP
-    buscarCep: () => {
-
-        // cria a variavel com o valor do cep
-        var cep = document.getElementById("txtCEP").value.trim().replace(/\D/g, '');
-
-        // verifica se o CEP possui valor informado
-        if (cep != "") {
-
-            // Expressão regular para validar o CEP
-            var validacep = /^[0-9]{8}$/;
-
-            if (validacep.test(cep)) {
-
-                //Cria um elemento javascript.
-                var script = document.createElement('script');
-
-                //Sincroniza com o callback.
-                script.src = 'https://viacep.com.br/ws/' + cep + '/json/?callback=empresa.method.callbackCep';
-
-                //Insere script no documento e carrega o conteúdo.
-                document.body.appendChild(script);
-
-            }
-            else {
-                app.method.mensagem('Formato do CEP inválido.');
-                document.getElementById("txtCEP").focus();
-            }
-
-        }
-        else {
-            app.method.mensagem('Informe o CEP, por favor.');
-            document.getElementById("txtCEP").focus();
+        if (response.status === "error") {
+          app.method.mensagem(response.message);
+          return;
         }
 
-    },
+        app.method.mensagem(response.message, "green");
 
-    // método chamado quando retorna algo da API de CEP
-    callbackCep: (dados) => {
+        app.method.removerSessao("Logo");
 
-        if (!("erro" in dados)) {
+        empresa.method.obterDados();
+        app.method.carregarDadosEmpresa();
+      },
+      (xhr, ajaxOptions, error) => {
+        app.method.loading(false);
+        console.log("xhr", xhr);
+        console.log("ajaxOptions", ajaxOptions);
+        console.log("error", error);
+      }
+    );
+  },
 
-            // Atualizar os campos com os valores retornados
-            document.getElementById("txtEndereco").value = dados.logradouro;
-            document.getElementById("txtBairro").value = dados.bairro;
-            document.getElementById("txtCidade").value = dados.localidade;
-            document.getElementById("ddlUf").value = dados.uf;
-            document.getElementById("txtNumero").focus();
+  // abre a modal de adicionar logo
+  openModalLogo: () => {
+    MODAL_UPLOAD.show();
+  },
 
-        }
-        else {
-            app.method.mensagem('CEP não encontrado. Preencha as informações manualmente.');
-            document.getElementById("#txtEndereco").focus();
-        }
+  // DRAG AND DROP - previne os comportamentos padrões
+  preventDefaults: (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  },
 
-    },
+  // DRAG AND DROP - adiciona a classe 'highlight' quando entra com a imagem no container
+  highlight: (e) => {
+    if (!DROP_AREA.classList.contains("highlight")) {
+      DROP_AREA.classList.add("highlight");
+    }
+  },
 
-    // valida os campos e salva os dados da empresa (TAB Endereço)
-    salvarDadosEndereco: () => {
+  // DRAG AND DROP - remove a classe 'highlight' quando sai com a imagem no container
+  unhighlight: (e) => {
+    DROP_AREA.classList.remove("highlight");
+  },
 
-        let cep = document.getElementById("txtCEP").value.trim();
-        let endereco = document.getElementById("txtEndereco").value.trim();
-        let bairro = document.getElementById("txtBairro").value.trim();
-        let cidade = document.getElementById("txtCidade").value.trim();
-        let uf = document.getElementById("ddlUf").value.trim();
-        let numero = document.getElementById("txtNumero").value.trim();
-        let complemento = document.getElementById("txtComplemento").value.trim();
+  // DRAG AND DROP - quando soltar a imagem no container
+  handleDrop: (e) => {
+    var dt = e.dataTransfer;
+    var files = dt.files;
 
-        if (cep.length <= 0) {
-            app.method.mensagem('Informe o CEP, por favor.');
-            document.getElementById("txtCEP").focus();
-            return;
-        }
+    console.log("files", files);
+    empresa.method.uploadLogo(files);
+  },
 
-        if (endereco.length <= 0) {
-            app.method.mensagem('Informe o Endereço, por favor.');
-            document.getElementById("txtEndereco").focus();
-            return;
-        }
+  // API ViaCEP
+  buscarCep: () => {
+    // cria a variavel com o valor do cep
+    var cep = document.getElementById("txtCEP").value.trim().replace(/\D/g, "");
 
-        if (bairro.length <= 0) {
-            app.method.mensagem('Informe o Bairro, por favor.');
-            document.getElementById("txtBairro").focus();
-            return;
-        }
+    // verifica se o CEP possui valor informado
+    if (cep != "") {
+      // Expressão regular para validar o CEP
+      var validacep = /^[0-9]{8}$/;
 
-        if (cidade.length <= 0) {
-            app.method.mensagem('Informe a Cidade, por favor.');
-            document.getElementById("txtCidade").focus();
-            return;
-        }
+      if (validacep.test(cep)) {
+        //Cria um elemento javascript.
+        var script = document.createElement("script");
 
-        if (uf == "-1") {
-            app.method.mensagem('Informe a UF, por favor.');
-            document.getElementById("ddlUf").focus();
-            return;
-        }
+        //Sincroniza com o callback.
+        script.src =
+          "https://viacep.com.br/ws/" +
+          cep +
+          "/json/?callback=empresa.method.callbackCep";
 
-        if (numero.length <= 0) {
-            app.method.mensagem('Informe o Número, por favor.');
-            document.getElementById("txtNumero").focus();
-            return;
-        }
+        //Insere script no documento e carrega o conteúdo.
+        document.body.appendChild(script);
+      } else {
+        app.method.mensagem("Formato do CEP inválido.");
+        document.getElementById("txtCEP").focus();
+      }
+    } else {
+      app.method.mensagem("Informe o CEP, por favor.");
+      document.getElementById("txtCEP").focus();
+    }
+  },
 
-        let dados = {
-            cep: cep,
-            endereco: endereco,
-            bairro: bairro,
-            cidade: cidade,
-            estado: uf,
-            numero: numero,
-            complemento: complemento
-        }
+  // método chamado quando retorna algo da API de CEP
+  callbackCep: (dados) => {
+    if (!("erro" in dados)) {
+      // Atualizar os campos com os valores retornados
+      document.getElementById("txtEndereco").value = dados.logradouro;
+      document.getElementById("txtBairro").value = dados.bairro;
+      document.getElementById("txtCidade").value = dados.localidade;
+      document.getElementById("ddlUf").value = dados.uf;
+      document.getElementById("txtNumero").focus();
+    } else {
+      app.method.mensagem(
+        "CEP não encontrado. Preencha as informações manualmente."
+      );
+      document.getElementById("#txtEndereco").focus();
+    }
+  },
 
-        app.method.loading(true);
+  // valida os campos e salva os dados da empresa (TAB Endereço)
+  salvarDadosEndereco: () => {
+    let cep = document.getElementById("txtCEP").value.trim();
+    let endereco = document.getElementById("txtEndereco").value.trim();
+    let bairro = document.getElementById("txtBairro").value.trim();
+    let cidade = document.getElementById("txtCidade").value.trim();
+    let uf = document.getElementById("ddlUf").value.trim();
+    let numero = document.getElementById("txtNumero").value.trim();
+    let complemento = document.getElementById("txtComplemento").value.trim();
 
-        app.method.post('/empresa/endereco', JSON.stringify(dados),
-            (response) => {
-                console.log(response)
+    if (cep.length <= 0) {
+      app.method.mensagem("Informe o CEP, por favor.");
+      document.getElementById("txtCEP").focus();
+      return;
+    }
 
-                app.method.loading(false);
+    if (endereco.length <= 0) {
+      app.method.mensagem("Informe o Endereço, por favor.");
+      document.getElementById("txtEndereco").focus();
+      return;
+    }
 
-                if (response.status === 'error') {
-                    app.method.mensagem(response.message);
-                    return;
-                }
+    if (bairro.length <= 0) {
+      app.method.mensagem("Informe o Bairro, por favor.");
+      document.getElementById("txtBairro").focus();
+      return;
+    }
 
-                app.method.mensagem(response.message, 'green');
+    if (cidade.length <= 0) {
+      app.method.mensagem("Informe a Cidade, por favor.");
+      document.getElementById("txtCidade").focus();
+      return;
+    }
 
-                empresa.method.obterDados();
-            },
-            (xhr, ajaxOptions, error) => {
-                app.method.loading(false);
-                console.log('xhr', xhr)
-                console.log('ajaxOptions', ajaxOptions)
-                console.log('error', error)
-            }
-        )
+    if (uf == "-1") {
+      app.method.mensagem("Informe a UF, por favor.");
+      document.getElementById("ddlUf").focus();
+      return;
+    }
 
-    },
+    if (numero.length <= 0) {
+      app.method.mensagem("Informe o Número, por favor.");
+      document.getElementById("txtNumero").focus();
+      return;
+    }
 
-    // obtem os horários da empresa
-    obterHorarios: () => {
+    let dados = {
+      cep: cep,
+      endereco: endereco,
+      bairro: bairro,
+      cidade: cidade,
+      estado: uf,
+      numero: numero,
+      complemento: complemento,
+    };
 
-        document.getElementById("listaHorarios").innerHTML = '';
+    app.method.loading(true);
 
-        app.method.get('/empresa/horario',
-            (response) => {
+    app.method.post(
+      "/empresa/endereco",
+      JSON.stringify(dados),
+      (response) => {
+        console.log(response);
 
-                if (response.status == "error") {
-                    console.log(response.message)
-                    return;
-                }
+        app.method.loading(false);
 
-                empresa.method.carregarHorarios(response.data)
-
-            },
-            (error) => {
-                console.log('error', error)
-            }
-        )
-
-    },
-
-    // carrega os horarios na tela
-    carregarHorarios: (lista) => {
-
-        if (lista.length > 0) {
-
-            // percorre os horários e adiciona na tela
-            lista.forEach((e, i) => {
-
-                // cria um ID aleatorio
-                let id = Math.floor(Date.now() * Math.random()).toString();
-
-                let temp = empresa.template.horario.replace(/\${id}/g, id)
-
-                let htmlObject = document.createElement('div');
-                htmlObject.classList.add('row', 'horario', 'mb-4');
-                htmlObject.id = `horario-${id}`;
-                htmlObject.innerHTML = temp;
-
-                // adiciona o horario na tela
-                document.getElementById("listaHorarios").appendChild(htmlObject);
-
-                // deixa um delay para depois inserir os valores na tela
-                setTimeout(() => {
-                    document.querySelector(`#horario-${id} .diainicio`).value = e.diainicio;
-                    document.querySelector(`#horario-${id} .diafim`).value = e.diafim;
-                    document.querySelector(`#horario-${id} .iniciohorarioum`).value = e.iniciohorarioum;
-                    document.querySelector(`#horario-${id} .fimhorarioum`).value = e.fimhorarioum;
-                    document.querySelector(`#horario-${id} .iniciohorariodois`).value = e.iniciohorariodois;
-                    document.querySelector(`#horario-${id} .fimhorariodois`).value = e.fimhorariodois;
-                }, 200);
-
-            })
-
-        }
-        else {
-
-            // nenhum horário encontrado, adiciona uma linha em branco
-            empresa.method.adicionarHorario();
-
+        if (response.status === "error") {
+          app.method.mensagem(response.message);
+          return;
         }
 
-    },
+        app.method.mensagem(response.message, "green");
 
-    // remover linha do horário
-    removerHorario: (id) => {
-        document.getElementById(`horario-${id}`).remove();
-    },
+        empresa.method.obterDados();
+      },
+      (xhr, ajaxOptions, error) => {
+        app.method.loading(false);
+        console.log("xhr", xhr);
+        console.log("ajaxOptions", ajaxOptions);
+        console.log("error", error);
+      }
+    );
+  },
 
-    // adiciona uma linha no horário
-    adicionarHorario: () => {
+  // obtem os horários da empresa
+  obterHorarios: () => {
+    document.getElementById("listaHorarios").innerHTML = "";
 
-        let adicionar = true;
-
-        // primeiro valida se tem alguma linha sem registros;
-        document.querySelectorAll('#listaHorarios .horario').forEach((e, i) => {
-            let _id = e.id.split('-')[1];
-
-            let diainicio = document.querySelector('#diainicio-' + _id).value;
-            let diafim = document.querySelector('#diafim-' + _id).value;
-            let iniciohorarioum = document.querySelector('#iniciohorarioum-' + _id).value;
-            let fimhorarioum = document.querySelector('#fimhorarioum-' + _id).value;
-
-            if (diainicio <= -1 || diafim <= -1 || iniciohorarioum.length <= 0 || fimhorarioum.length <= 0) {
-                adicionar = false;
-                app.method.mensagem('Antes de adicionar outra linha, verifique se não existem linhas em branco')
-            }
-
-        });
-
-        if (!adicionar) {
-            return;
+    app.method.get(
+      "/empresa/horario",
+      (response) => {
+        if (response.status == "error") {
+          console.log(response.message);
+          return;
         }
 
+        empresa.method.carregarHorarios(response.data);
+      },
+      (error) => {
+        console.log("error", error);
+      }
+    );
+  },
+
+  // carrega os horarios na tela
+  carregarHorarios: (lista) => {
+    if (lista.length > 0) {
+      // percorre os horários e adiciona na tela
+      lista.forEach((e, i) => {
+        // cria um ID aleatorio
         let id = Math.floor(Date.now() * Math.random()).toString();
 
         let temp = empresa.template.horario.replace(/\${id}/g, id);
 
-        var htmlObject = document.createElement('div');
-        htmlObject.classList.add('row', 'horario', 'mb-4');
+        let htmlObject = document.createElement("div");
+        htmlObject.classList.add("row", "horario", "mb-4");
         htmlObject.id = `horario-${id}`;
         htmlObject.innerHTML = temp;
 
         // adiciona o horario na tela
         document.getElementById("listaHorarios").appendChild(htmlObject);
 
-    },
+        // deixa um delay para depois inserir os valores na tela
+        setTimeout(() => {
+          document.querySelector(`#horario-${id} .diainicio`).value =
+            e.diainicio;
+          document.querySelector(`#horario-${id} .diafim`).value = e.diafim;
+          document.querySelector(`#horario-${id} .iniciohorarioum`).value =
+            e.iniciohorarioum;
+          document.querySelector(`#horario-${id} .fimhorarioum`).value =
+            e.fimhorarioum;
+          document.querySelector(`#horario-${id} .iniciohorariodois`).value =
+            e.iniciohorariodois;
+          document.querySelector(`#horario-${id} .fimhorariodois`).value =
+            e.fimhorariodois;
+        }, 200);
+      });
+    } else {
+      // nenhum horário encontrado, adiciona uma linha em branco
+      empresa.method.adicionarHorario();
+    }
+  },
 
-    // valida os campos e salva os horários
-    salvarHorarios: () => {
+  // remover linha do horário
+  removerHorario: (id) => {
+    document.getElementById(`horario-${id}`).remove();
+  },
 
-        let _horarios = [];
-        let continuar = true;
+  // adiciona uma linha no horário
+  adicionarHorario: () => {
+    let adicionar = true;
 
-        // primeiro valida se tem alguma linha sem registros;
-        document.querySelectorAll('#listaHorarios .horario').forEach((e, i) => {
-            let _id = e.id.split('-')[1];
+    // primeiro valida se tem alguma linha sem registros;
+    document.querySelectorAll("#listaHorarios .horario").forEach((e, i) => {
+      let _id = e.id.split("-")[1];
 
-            let diainicio = document.querySelector('#diainicio-' + _id).value;
-            let diafim = document.querySelector('#diafim-' + _id).value;
-            let iniciohorarioum = document.querySelector('#iniciohorarioum-' + _id).value;
-            let fimhorarioum = document.querySelector('#fimhorarioum-' + _id).value;
-            let iniciohorariodois = document.querySelector('#iniciohorariodois-' + _id).value;
-            let fimhorariodois = document.querySelector('#fimhorariodois-' + _id).value;
+      let diainicio = document.querySelector("#diainicio-" + _id).value;
+      let diafim = document.querySelector("#diafim-" + _id).value;
+      let iniciohorarioum = document.querySelector(
+        "#iniciohorarioum-" + _id
+      ).value;
+      let fimhorarioum = document.querySelector("#fimhorarioum-" + _id).value;
 
-            // valida os campos obrigatórios
-            if (diainicio <= -1 || diafim <= -1 || iniciohorarioum.length <= 0 || fimhorarioum.length <= 0) {
-                continuar = false;
-                app.method.mensagem('Alguns campos obrigatórios não foram preenchidos.');
-            }
+      if (
+        diainicio <= -1 ||
+        diafim <= -1 ||
+        iniciohorarioum.length <= 0 ||
+        fimhorarioum.length <= 0
+      ) {
+        adicionar = false;
+        app.method.mensagem(
+          "Antes de adicionar outra linha, verifique se não existem linhas em branco"
+        );
+      }
+    });
 
-            _horarios.push({
-                diainicio: diainicio,
-                diafim: diafim,
-                iniciohorarioum: iniciohorarioum,
-                fimhorarioum: fimhorarioum,
-                iniciohorariodois: iniciohorariodois,
-                fimhorariodois: fimhorariodois
-            })
+    if (!adicionar) {
+      return;
+    }
 
-        });
+    let id = Math.floor(Date.now() * Math.random()).toString();
 
-        if (!continuar) {
-            return;
+    let temp = empresa.template.horario.replace(/\${id}/g, id);
+
+    var htmlObject = document.createElement("div");
+    htmlObject.classList.add("row", "horario", "mb-4");
+    htmlObject.id = `horario-${id}`;
+    htmlObject.innerHTML = temp;
+
+    // adiciona o horario na tela
+    document.getElementById("listaHorarios").appendChild(htmlObject);
+  },
+
+  // valida os campos e salva os horários
+  salvarHorarios: () => {
+    let _horarios = [];
+    let continuar = true;
+
+    // primeiro valida se tem alguma linha sem registros;
+    document.querySelectorAll("#listaHorarios .horario").forEach((e, i) => {
+      let _id = e.id.split("-")[1];
+
+      let diainicio = document.querySelector("#diainicio-" + _id).value;
+      let diafim = document.querySelector("#diafim-" + _id).value;
+      let iniciohorarioum = document.querySelector(
+        "#iniciohorarioum-" + _id
+      ).value;
+      let fimhorarioum = document.querySelector("#fimhorarioum-" + _id).value;
+      let iniciohorariodois = document.querySelector(
+        "#iniciohorariodois-" + _id
+      ).value;
+      let fimhorariodois = document.querySelector(
+        "#fimhorariodois-" + _id
+      ).value;
+
+      // valida os campos obrigatórios
+      if (
+        diainicio <= -1 ||
+        diafim <= -1 ||
+        iniciohorarioum.length <= 0 ||
+        fimhorarioum.length <= 0
+      ) {
+        continuar = false;
+        app.method.mensagem(
+          "Alguns campos obrigatórios não foram preenchidos."
+        );
+      }
+
+      _horarios.push({
+        diainicio: diainicio,
+        diafim: diafim,
+        iniciohorarioum: iniciohorarioum,
+        fimhorarioum: fimhorarioum,
+        iniciohorariodois: iniciohorariodois,
+        fimhorariodois: fimhorariodois,
+      });
+    });
+
+    if (!continuar) {
+      return;
+    }
+
+    console.log("_horarios", _horarios);
+
+    app.method.loading(true);
+
+    app.method.post(
+      "/empresa/horario",
+      JSON.stringify(_horarios),
+      (response) => {
+        console.log(response);
+
+        app.method.loading(false);
+
+        if (response.status === "error") {
+          app.method.mensagem(response.message);
+          return;
         }
 
-        console.log('_horarios', _horarios);
+        app.method.mensagem(response.message, "green");
 
-        app.method.loading(true);
-
-        app.method.post('/empresa/horario', JSON.stringify(_horarios),
-            (response) => {
-                console.log(response)
-
-                app.method.loading(false);
-
-                if (response.status === 'error') {
-                    app.method.mensagem(response.message);
-                    return;
-                }
-
-                app.method.mensagem(response.message, 'green');
-
-                empresa.method.openTab('horario');
-            },
-            (xhr, ajaxOptions, error) => {
-                app.method.loading(false);
-                console.log('xhr', xhr)
-                console.log('ajaxOptions', ajaxOptions)
-                console.log('error', error)
-            }
-        )
-
-    },
-
-}
+        empresa.method.openTab("horario");
+      },
+      (xhr, ajaxOptions, error) => {
+        app.method.loading(false);
+        console.log("xhr", xhr);
+        console.log("ajaxOptions", ajaxOptions);
+        console.log("error", error);
+      }
+    );
+  },
+};
 
 empresa.template = {
-
-    horario: `
+  horario: `
 
         <div class="col-2">
             <div class="form-group">
@@ -691,6 +713,5 @@ empresa.template = {
                 <i class="fas fa-trash-alt"></i> 
             </a>
         </div>
-    `
-
-}
+    `,
+};

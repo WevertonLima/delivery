@@ -5,7 +5,9 @@ SELECT
 FROM 
 	produto
 WHERE
-    apagado = 0
+    ativo = 1
+AND 
+	apagado = 0
 ORDER BY
 	-ordem DESC, idproduto ASC
 
@@ -39,6 +41,7 @@ SELECT
     , valor
     , imagem
     , ordem
+	, ativo
 FROM 
 	produto
 WHERE
@@ -68,6 +71,7 @@ SELECT
     , valor
     , imagem
     , ordem
+	, ativo
 FROM 
 	produto
 WHERE
@@ -124,6 +128,18 @@ WHERE
 	idproduto = @idproduto
 
 --END#atualizarProduto#
+
+
+--INIT#ativarProduto#
+UPDATE
+	produto
+SET
+	ativo = @ativo
+WHERE
+	idproduto = @idproduto
+
+--END#ativarProduto#
+
 
 
 --INIT#adicionarImagemProduto#
