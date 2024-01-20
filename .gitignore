@@ -18,3 +18,4 @@ server/public/images/
 
 
 # Dependendo do seu ambiente e linguagem de programação, você pode precisar adicionar mais entradas para arquivos e diretórios específicos.
+/.vs
