@@ -7,6 +7,31 @@ const readCommandSql = new ReadCommandSql();
 const key = "4ab686c6a16b47599696955a054787bb";
 
 const controllers = () => {
+  // Lista as categorias no cardápio
+  const listarTodas = async (req) => {
+    try {
+      var ComandoSQL = await readCommandSql.retornaStringSql(
+        "listarTodas",
+        "pedido"
+      );
+
+      var idpedidostatus = req.params.idpedidostatus;
+
+      var result = await db.Query(ComandoSQL, { idpedidostatus });
+
+      return {
+        status: "success",
+        data: result,
+      };
+    } catch (ex) {
+      console.log(ex);
+      return {
+        status: "error",
+        message: "Falha ao obter as pedidos.",
+      };
+    }
+  };
+
   // obtem a rota (lat, long) e calcula a taxa do delivery por km (se for taxa por distancia)
   const calcularTaxaDelivery = async (req) => {
     try {
@@ -262,10 +287,37 @@ const controllers = () => {
     }
   };
 
+  const moverStatus = async (req) => {
+    try {
+      var ComandoSQL = await readCommandSql.retornaStringSql(
+        "moverStatus",
+        "pedido"
+      );
+
+      var idstatus = req.body.idpedidostatus;
+      var idpedido = req.body.idpedido;
+
+      var result = await db.Query(ComandoSQL, { idstatus, idpedido });
+
+      return {
+        status: "success",
+        data: result,
+      };
+    } catch (ex) {
+      console.log(ex);
+      return {
+        status: "error",
+        message: "Falha ao obter as pedidos.",
+      };
+    }
+  };
+
   return Object.create({
     calcularTaxaDelivery,
     salvarPedido,
     obterPedidoPorId,
+    listarTodas,
+    moverStatus,
   });
 };
 

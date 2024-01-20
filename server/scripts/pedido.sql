@@ -65,3 +65,53 @@ WHERE
     idpedido = @idpedido
 
 --END#obterPedidoPorId#
+
+--INIT#listarTodas#
+SELECT 
+	p.idpedido,
+    ps.descricao,
+    te.nome as 'taxaEntrega',
+    txet.nome as 'taxaEntregaTipo',
+    fp.nome as 'formaPagamento',
+    p.troco,
+    p.total,
+    p.cep,
+    p.endereco,
+    p.numero,
+    p.bairro,
+    p.complemento,
+    p.cidade,
+    p.estado,
+    p.nomecliente,
+    p.telefonecliente
+FROM pedido p
+INNER JOIN 
+    pedidostatus ps on p.idpedidostatus = ps.idpedidostatus
+INNER JOIN 
+    tipoentrega  te on p.idtipoentrega = te.idtipoentrega
+INNER JOIN 
+    taxaentrega  txe on p.idtaxaentrega = txe.idtaxaentrega
+INNER JOIN 
+    taxaentregatipo  txet on txe.idtaxaentregatipo = txet.idtaxaentregatipo
+INNER JOIN 
+    formapagamento  fp on p.idformapagamento = fp.idformapagamento
+WHERE
+    p.idpedidostatus = @idpedidostatus
+AND 
+    DATE(P.datacadastro) = CURRENT_DATE()
+ORDER BY 
+    p.datacadastro DESC;
+
+--END#listarTodas#
+
+
+--INIT#moverStatus#
+
+UPDATE
+	pedido
+SET
+	idpedidostatus = @idstatus
+WHERE
+	idpedido = @idpedido
+
+--END#moverStatus#

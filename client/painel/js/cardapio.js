@@ -1089,8 +1089,6 @@ cardapio.method = {
       ativo: isCheck ? 1 : 0,
     };
 
-    console.log("changeProdutoAtivo", dados);
-
     app.method.post(
       "/produto/ativar",
       JSON.stringify(dados),
