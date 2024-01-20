@@ -5,8 +5,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
 var config = {};
 
 config.event = {
-  init: () => {
-    app.method.validaToken();
+
+    init: () => {
+
+        app.method.validaToken();
+        app.method.carregarDadosEmpresa();
 
     // inicia a primeira Tab
     config.method.openTab("delivery-retirada");

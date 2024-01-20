@@ -875,3 +875,13 @@ div#addOpcional {
     padding: 6px 10px;
     font-size: 11px;
 }
+
+.container-group {
+    padding-bottom: 30px;
+    margin-bottom: 30px!important;
+    border-bottom: 2px dashed var(--color-input-out);
+}
+
+.container-group:last-child {
+    border-bottom: none;
+}

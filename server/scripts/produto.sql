@@ -35,20 +35,25 @@ WHERE
 --INIT#obterPorCategoriaId#
 
 SELECT
-	idproduto
-    , nome
-    , descricao
-    , valor
-    , imagem
-    , ordem
-	, ativo
+	p.idproduto
+    , p.nome
+    , p.descricao
+    , p.valor
+    , p.imagem
+    , p.ordem
+	, p.ativo
+	, COUNT(op.idopcional) AS opcionais 
 FROM 
-	produto
+	produto AS p
+    LEFT JOIN produtoopcional AS po ON po.idproduto = p.idproduto
+    LEFT JOIN opcional AS op ON op.idopcional = po.idopcional
 WHERE
-    idcategoria = @idcategoria
-    AND apagado = 0
+    p.idcategoria = @idcategoria
+    AND p.apagado = 0
+GROUP BY
+	p.idproduto
 ORDER BY
-	-ordem DESC, idproduto ASC
+	-p.ordem DESC, p.idproduto ASC
 
 --END#obterPorCategoriaId#
 

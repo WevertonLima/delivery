@@ -2,6 +2,7 @@
 
 SELECT
 	o.idopcional
+    , oi.idopcionalitem
 	, o.nome as titulo
     , o.tiposimples
     , o.minimo
