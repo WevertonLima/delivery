@@ -360,6 +360,7 @@ a.container-voltar {
     display: flex;
     justify-content: space-between;
     font-size: 14px;
+    align-items: center;
 }
 
 .infos-produto-opcional .name,

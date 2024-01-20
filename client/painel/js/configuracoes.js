@@ -9,6 +9,7 @@ config.event = {
     init: () => {
 
         app.method.validaToken();
+        app.method.carregarDadosEmpresa();
 
         // inicia a primeira Tab
         config.method.openTab('delivery-retirada');

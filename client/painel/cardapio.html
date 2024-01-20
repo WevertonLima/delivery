@@ -27,7 +27,7 @@
         <div class="menu-left">
 
             <div class="logo">
-                <img src="../img/logo.png" width="100">
+                <img class="logo-empresa" width="100">
             </div>
 
             <div class="menus">
@@ -65,11 +65,11 @@
 
                             <div class="container-right">
                                 <div class="container-dados">
-                                    <p>Front.lee</p>
-                                    <span>frontlee.contato@gmail.com</span>
+                                    <p class="nome-empresa"></p>
+                                    <span class="email-empresa"></span>
                                 </div>
 
-                                <a href="#" class="btn btn-white btn-sm">
+                                <a href="#" class="btn btn-white btn-sm" onclick="app.method.logout()">
                                     <i class="fas fa-sign-out-alt"></i>&nbsp; Sair
                                 </a>
 
@@ -394,89 +394,7 @@
 
                     <div class="col-12 opcionais" id="listaOpcionaisProduto">
 
-                        <div class="container-group mb-5">
-                            <span class="badge">Obrigatório</span>
-                            <p class="title-categoria mb-0"><b>Deseja borda?</b></p>
-                            <span class="sub-title-categoria">Escolha 1 opção</span>
-                            <div class="card card-opcionais mt-2">
-                                <div class="infos-produto-opcional">
-                                    <p class="name mb-0"><b>Catupiry</b></p>
-                                    <p class="price mb-0"><b>+ R$ 8,90</b></p>
-                                </div>
-                                <div class="checks">
-                                    <label class="container-check">
-                                        <input type="checkbox" checked="checked">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="card card-opcionais mt-2">
-                                <div class="infos-produto-opcional">
-                                    <p class="name mb-0"><b>Cheddar</b></p>
-                                    <p class="price mb-0"><b>+ R$ 8,90</b></p>
-                                </div>
-                                <div class="checks">
-                                    <label class="container-check">
-                                        <input type="checkbox">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-            
-                        <div class="container-group mb-5">
-                            <p class="title-categoria mb-0"><b>Adicionais</b></p>
-                            <span class="sub-title-categoria">Escolha até 2 opções</span>
-                            <div class="card card-opcionais mt-2">
-                                <div class="infos-produto-opcional">
-                                    <p class="name mb-0"><b>Bacon</b></p>
-                                    <p class="price mb-0"><b>+ R$ 8,90</b></p>
-                                </div>
-                                <div class="checks">
-                                    <label class="container-check">
-                                        <input type="checkbox">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="card card-opcionais mt-2">
-                                <div class="infos-produto-opcional">
-                                    <p class="name mb-0"><b>Cebola</b></p>
-                                    <p class="price mb-0"><b>+ R$ 8,90</b></p>
-                                </div>
-                                <div class="checks">
-                                    <label class="container-check">
-                                        <input type="checkbox">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="card card-opcionais mt-2">
-                                <div class="infos-produto-opcional">
-                                    <p class="name mb-0"><b>Catupiry</b></p>
-                                    <p class="price mb-0"><b>+ R$ 8,90</b></p>
-                                </div>
-                                <div class="checks">
-                                    <label class="container-check">
-                                        <input type="checkbox">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="card card-opcionais mt-2">
-                                <div class="infos-produto-opcional">
-                                    <p class="name mb-0"><b>Cheddar</b></p>
-                                    <p class="price mb-0"><b>+ R$ 8,90</b></p>
-                                </div>
-                                <div class="checks">
-                                    <label class="container-check">
-                                        <input type="checkbox">
-                                        <span class="checkmark"></span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                
+                                        
                     </div>
 
                     <div class="col-12 mt-3">
@@ -490,57 +408,7 @@
                     </div>
                    
                 </div>    
-                <div id="addOpcional" class="addOpcional hidden">
-
-                    <div class="row">
-
-                        <div class="col-12">
-
-                            <p class="title-categoria mb-0"><b>Selecione o tipo de opcional:</b></p>
-
-                            <div class="container-group inline mb-3">
-                                <div class="card mt-3">
-                                    <div class="group-select">
-                                        <div class="checks">
-                                            <label class="container-check">
-                                                <input type="checkbox" checked="true">
-                                                <span class="checkmark"></span>
-                                                Opcional simples
-                                            </label> 
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="card mt-3">
-                                    <div class="group-select">
-                                        <div class="checks">
-                                            <label class="container-check">
-                                                <input type="checkbox">
-                                                <span class="checkmark"></span>
-                                                Seleção de opções
-                                            </label> 
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="mt-5 float-right">    
-                        <a href="#!" class="btn btn-white btn-sm" onclick="cardapio.method.abrirContainerAddOpcional(false)">
-                            <i class="fas fa-times"></i>&nbsp; Cancelar
-                        </a>
-                        <a href="#!" class="btn btn-yellow btn-sm ms-2" onclick="cardapio.method.salvarProduto()">
-                            <i class="fas fa-check"></i>&nbsp; Salvar Opcional
-                        </a>
-                    </div>
-                    
-
-                </div>    
-
+                
                 <div class="footer-btn mt-3">
                     <!-- <a href="#!" class="btn btn-yellow btn-sm" onclick="cardapio.method.salvarProduto()">
                         <i class="fas fa-check"></i>&nbsp; Salvar Produto
