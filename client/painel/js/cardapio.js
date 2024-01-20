@@ -13,11 +13,9 @@ var PRODUTO_ID = 0;
 let DROP_AREA = document.getElementById("drop-area");
 
 cardapio.event = {
-
-    init: () => {
-
-        app.method.validaToken();
-        app.method.carregarDadosEmpresa();
+  init: () => {
+    app.method.validaToken();
+    app.method.carregarDadosEmpresa();
 
     $("#categoriasMenu").sortable({
       scroll: false, // para não scrollar a tela
@@ -232,15 +230,21 @@ cardapio.method = {
           btnRemover = "";
         }
 
-                let temp = cardapio.template.produto.replace(/\${id}/g, e.idproduto)
-                    .replace(/\${imagem}/g, imagem)
-                    .replace(/\${nome}/g, e.nome)
-                    .replace(/\${descricao}/g, e.descricao)
-                    .replace(/\${preco}/g, e.valor.toFixed(2).replace('.', ','))
-                    .replace(/\${idcategoria}/g, idcategoria)
-                    .replace(/\${btnEditar}/g, btnEditar)
-                    .replace(/\${btnRemover}/g, btnRemover)
-                    .replace(/\${opcionais}/g, e.opcionais > 0 ? `<span class="badge-adicionais">${e.opcionais}</span>` : '');
+        let temp = cardapio.template.produto
+          .replace(/\${id}/g, e.idproduto)
+          .replace(/\${imagem}/g, imagem)
+          .replace(/\${nome}/g, e.nome)
+          .replace(/\${descricao}/g, e.descricao)
+          .replace(/\${preco}/g, e.valor.toFixed(2).replace(".", ","))
+          .replace(/\${idcategoria}/g, idcategoria)
+          .replace(/\${btnEditar}/g, btnEditar)
+          .replace(/\${btnRemover}/g, btnRemover)
+          .replace(
+            /\${opcionais}/g,
+            e.opcionais > 0
+              ? `<span class="badge-adicionais">${e.opcionais}</span>`
+              : ""
+          );
 
         document.querySelector("#listaProdutos-" + idcategoria).innerHTML +=
           temp;
@@ -715,19 +719,17 @@ cardapio.method = {
           return;
         }
 
-                app.method.mensagem(response.message, 'green');
+        app.method.mensagem(response.message, "green");
 
-                // força o método de obter os produtos da categoria aberta
-                cardapio.method.obterProdutosCategoria(CATEGORIA_ID, true);
-
-            },
-            (error) => {
-                app.method.loading(false);
-                console.log('error', error)
-            }
-        )
-
-    },
+        // força o método de obter os produtos da categoria aberta
+        cardapio.method.obterProdutosCategoria(CATEGORIA_ID, true);
+      },
+      (error) => {
+        app.method.loading(false);
+        console.log("error", error);
+      }
+    );
+  },
 
   // remove a imagem do produto da empresa
   removerImagemProduto: () => {
@@ -752,19 +754,17 @@ cardapio.method = {
           return;
         }
 
-                app.method.mensagem(response.message, 'green');
+        app.method.mensagem(response.message, "green");
 
-                // força o método de obter os produtos da categoria aberta
-                cardapio.method.obterProdutosCategoria(CATEGORIA_ID, true);
-
-            },
-            (error) => {
-                app.method.loading(false);
-                console.log('error', error)
-            }
-        )
-
-    },
+        // força o método de obter os produtos da categoria aberta
+        cardapio.method.obterProdutosCategoria(CATEGORIA_ID, true);
+      },
+      (error) => {
+        app.method.loading(false);
+        console.log("error", error);
+      }
+    );
+  },
 
   // abre a modal de adicionar imagem do produto
   abrirModalImagemProduto: (idcategoria, idproduto) => {
@@ -844,134 +844,129 @@ cardapio.method = {
           return;
         }
 
-                cardapio.method.carregarOpcionaisProduto(response.data);
-                cardapio.method.carregarOpcionaisProdutoSimples(response.data);
+        cardapio.method.carregarOpcionaisProduto(response.data);
+        cardapio.method.carregarOpcionaisProdutoSimples(response.data);
+      },
+      (error) => {
+        app.method.loading(false);
+        console.log("error", error);
+      }
+    );
+  },
 
-            },
-            (error) => {
-                app.method.loading(false);
-                console.log('error', error)
+  // carrega na modal a lista de opcionais do produto
+  carregarOpcionaisProduto: (lista) => {
+    if (lista.length > 0) {
+      // agrupa o resto pelo titulo (opcionais de seleção)
+      let listaSelecao = lista.filter((elem) => {
+        return elem.tiposimples == 0;
+      });
+      let listaAgrupada = Object.groupBy(
+        listaSelecao,
+        ({ idopcional }) => idopcional
+      );
+
+      // carrega a lista agrupada
+      Object.entries(listaAgrupada).forEach((e, i) => {
+        let opcional = e[1];
+
+        let obrigatorio = "";
+        let subtitulo = "";
+        let itens = "";
+
+        // valida se é obrigatória ou não, e altera o subtitulo
+        let minimo = opcional[0].minimo;
+        let maximo = opcional[0].maximo;
+
+        if (minimo === maximo) {
+          if (minimo > 1) {
+            subtitulo = `Escolha ${minimo} opções`;
+            obrigatorio = `<span class="badge" id="badge-obrigatorio-${e[0]}">Obrigatório</span>`;
+          } else {
+            subtitulo = `Escolha 1 opção`;
+            obrigatorio = `<span class="badge" id="badge-obrigatorio-${e[0]}">Obrigatório</span>`;
+          }
+        }
+        if (minimo < maximo) {
+          if (minimo > 0) {
+            subtitulo = `Escolha de ${minimo} até ${maximo} opções`;
+            obrigatorio = `<span class="badge" id="badge-obrigatorio-${e[0]}">Obrigatório</span>`;
+          } else {
+            if (maximo > 1) {
+              subtitulo = `Escolha até ${maximo} opções`;
+            } else {
+              subtitulo = `Escolha até 1 opção`;
             }
-        );
-
-    },
-
-    // carrega na modal a lista de opcionais do produto
-    carregarOpcionaisProduto: (lista) => {
-
-        if (lista.length > 0) {
-
-            // agrupa o resto pelo titulo (opcionais de seleção)
-            let listaSelecao = lista.filter((elem) => { return elem.tiposimples == 0 });
-            let listaAgrupada = Object.groupBy(listaSelecao, ({ idopcional }) => idopcional);
-
-            // carrega a lista agrupada
-            Object.entries(listaAgrupada).forEach((e, i) => {
-
-                let opcional = e[1];
-
-                let obrigatorio = '';
-                let subtitulo = '';
-                let itens = '';
-
-                // valida se é obrigatória ou não, e altera o subtitulo
-                let minimo = opcional[0].minimo;
-                let maximo = opcional[0].maximo;
-
-                if (minimo === maximo) {
-                    if (minimo > 1) {
-                        subtitulo = `Escolha ${minimo} opções`;
-                        obrigatorio = `<span class="badge" id="badge-obrigatorio-${e[0]}">Obrigatório</span>`;
-                    }
-                    else {
-                        subtitulo = `Escolha 1 opção`;
-                        obrigatorio = `<span class="badge" id="badge-obrigatorio-${e[0]}">Obrigatório</span>`;
-                    }
-                }
-                if (minimo < maximo) {
-                    if (minimo > 0) {
-                        subtitulo = `Escolha de ${minimo} até ${maximo} opções`;
-                        obrigatorio = `<span class="badge" id="badge-obrigatorio-${e[0]}">Obrigatório</span>`;
-                    }
-                    else {
-                        if (maximo > 1) {
-                            subtitulo = `Escolha até ${maximo} opções`;
-                        }
-                        else {
-                            subtitulo = `Escolha até 1 opção`;
-                        }
-                    }
-                }
-
-                // monta a lista de itens
-                for (let index = 0; index < opcional.length; index++) {
-                    let element = opcional[index];
-                    console.log('element', element);
-
-                    let valor = '';
-
-                    if (element.valoropcional > 0) {
-                        valor = `+ R$ ${(element.valoropcional).toFixed(2).replace('.', ',')}`;
-                    }
-
-                    itens += cardapio.template.opcionalItem.replace(/\${idopcionalitem}/g, element.idopcionalitem)
-                        .replace(/\${nome}/g, element.nomeopcional)
-                        .replace(/\${valor}/g, valor)
-                        .replace(/\${idopcional}/g, e[0])
-                }
-
-                let temp = cardapio.template.opcional.replace(/\${idopcional}/g, e[0])
-                    .replace(/\${obrigatorio}/g, obrigatorio)
-                    .replace(/\${titulo}/g, opcional[0].titulo)
-                    .replace(/\${sub-titulo}/g, subtitulo)
-                    .replace(/\${minimo}/g, minimo)
-                    .replace(/\${maximo}/g, maximo)
-                    .replace(/\${itens}/g, itens)
-
-                // adiciona a categoria ao menu
-                document.querySelector("#listaOpcionaisProduto").innerHTML += temp;
-
-                // último item
-                if ((i + 1) == listaAgrupada.length) {
-
-                }
-
-            });
-
+          }
         }
 
-    },
+        // monta a lista de itens
+        for (let index = 0; index < opcional.length; index++) {
+          let element = opcional[index];
+          console.log("element", element);
 
-    // carrega na modal a lista de opcionais simples do produto
-    carregarOpcionaisProdutoSimples: (lista) => {
+          let valor = "";
 
-        // pega a lista dos opcionais simples
-        let listaSimples = lista.filter((elem) => { return elem.tiposimples == 1 });
+          if (element.valoropcional > 0) {
+            valor = `+ R$ ${element.valoropcional
+              .toFixed(2)
+              .replace(".", ",")}`;
+          }
 
-        if (listaSimples.length > 0) {
-
-            // adiciona o container de opcionais simples
-            document.querySelector("#listaOpcionaisProduto").innerHTML += cardapio.template.opcionalSimples;
-
-            listaSimples.forEach((e, i) => {
-
-                let valor = '';
-
-                if (e.valoropcional > 0) {
-                    valor = `+ R$ ${(e.valoropcional).toFixed(2).replace('.', ',')}`;
-                }
-
-                let temp = cardapio.template.opcionalItemSimples.replace(/\${idopcionalitem}/g, e.idopcionalitem)
-                    .replace(/\${nome}/g, e.nomeopcional)
-                    .replace(/\${valor}/g, valor)
-
-                document.querySelector("#listaOpcionaisSimples").innerHTML += temp;
-
-            });
-
+          itens += cardapio.template.opcionalItem
+            .replace(/\${idopcionalitem}/g, element.idopcionalitem)
+            .replace(/\${nome}/g, element.nomeopcional)
+            .replace(/\${valor}/g, valor)
+            .replace(/\${idopcional}/g, e[0]);
         }
 
-    },
+        let temp = cardapio.template.opcional
+          .replace(/\${idopcional}/g, e[0])
+          .replace(/\${obrigatorio}/g, obrigatorio)
+          .replace(/\${titulo}/g, opcional[0].titulo)
+          .replace(/\${sub-titulo}/g, subtitulo)
+          .replace(/\${minimo}/g, minimo)
+          .replace(/\${maximo}/g, maximo)
+          .replace(/\${itens}/g, itens);
+
+        // adiciona a categoria ao menu
+        document.querySelector("#listaOpcionaisProduto").innerHTML += temp;
+
+        // último item
+        if (i + 1 == listaAgrupada.length) {
+        }
+      });
+    }
+  },
+
+  // carrega na modal a lista de opcionais simples do produto
+  carregarOpcionaisProdutoSimples: (lista) => {
+    // pega a lista dos opcionais simples
+    let listaSimples = lista.filter((elem) => {
+      return elem.tiposimples == 1;
+    });
+
+    if (listaSimples.length > 0) {
+      // adiciona o container de opcionais simples
+      document.querySelector("#listaOpcionaisProduto").innerHTML +=
+        cardapio.template.opcionalSimples;
+
+      listaSimples.forEach((e, i) => {
+        let valor = "";
+
+        if (e.valoropcional > 0) {
+          valor = `+ R$ ${e.valoropcional.toFixed(2).replace(".", ",")}`;
+        }
+
+        let temp = cardapio.template.opcionalItemSimples
+          .replace(/\${idopcionalitem}/g, e.idopcionalitem)
+          .replace(/\${nome}/g, e.nomeopcional)
+          .replace(/\${valor}/g, valor);
+
+        document.querySelector("#listaOpcionaisSimples").innerHTML += temp;
+      });
+    }
+  },
 
   // abre ou fecha o container de adicionar opcional
   abrirModalAddOpcional: () => {
@@ -993,12 +988,10 @@ cardapio.method = {
     $("#chkOpcionalSimples").prop("checked", true);
     $("#chkSelecaoOpcoes").prop("checked", false);
 
-        // abre a modal
-        $('#modalAddOpcionalProduto').modal({ backdrop: 'static' });
-        $('#modalAddOpcionalProduto').modal('show');
-
-
-    },
+    // abre a modal
+    $("#modalAddOpcionalProduto").modal({ backdrop: "static" });
+    $("#modalAddOpcionalProduto").modal("show");
+  },
 
   // seta o chackbox pra opção selecionada
   changeTipoOpcional: (opcao) => {
@@ -1074,28 +1067,29 @@ cardapio.method = {
       }
     }
 
-        if (minimo < maximo) {
-            if (minimo > 0) {
-                texto = `Escolha de ${minimo} até ${maximo} opções (obrigatório)`;
-            }
-            else {
-                if (maximo > 1) {
-                    texto = `Escolha até ${maximo} opções`;
-                }
-                else {
-                    texto = `Escolha até 1 opção`;
-                }
-
-            }
+    if (minimo < maximo) {
+      if (minimo > 0) {
+        texto = `Escolha de ${minimo} até ${maximo} opções (obrigatório)`;
+      } else {
+        if (maximo > 1) {
+          texto = `Escolha até ${maximo} opções`;
+        } else {
+          texto = `Escolha até 1 opção`;
         }
+      }
+    }
 
     $("#text-opcao-hint").text(texto);
   },
 
-    // valida os campos para salvar o opcional
-    salvarOpcional: () => {
+  changeProdutoAtivo: (id) => {
+    var isCheck = document.querySelector("#chkProdutoAtivo-" + id).checked;
+    var dados = {
+      idproduto: id,
+      ativo: isCheck ? 1 : 0,
+    };
 
-
+    console.log("changeProdutoAtivo", dados);
 
     app.method.post(
       "/produto/ativar",
@@ -1103,12 +1097,7 @@ cardapio.method = {
       (response) => {
         console.log(response);
 
-    abrirModalRemoverOpcionalItem: (idopcionalitem) => {
-
-
-
-    },
-
+        app.method.loading(false);
 
         if (response.status === "error") {
           app.method.mensagem(response.message);
@@ -1210,6 +1199,10 @@ cardapio.template = {
                 <a href="#!" class="icon-action" data-toggle="tooltip" data-placement="top" title="Remover" onclick="cardapio.method.abrirModalRemoverProduto('\${idcategoria}', '\${id}')">
                     <i class="fas fa-trash-alt"></i>
                 </a>
+                <label class="switch mt-2">
+                    <input type="checkbox" id="chkProdutoAtivo-\${id}" onchange="cardapio.method.changeProdutoAtivo('\${id}')">
+                    <span class="slider round"></span>
+                </label>
             </div>
         </div>
     </div>
@@ -1239,7 +1232,7 @@ cardapio.template = {
         </div>
     `,
 
-    opcional: `
+  opcional: `
         <div class="container-group mb-5" data-minimo="\${minimo}" data-maximo="\${maximo}" id="opcional-\${idopcional}">
             \${obrigatorio}
             <p class="title-categoria mb-0"><b>\${titulo}</b></p>
@@ -1248,7 +1241,7 @@ cardapio.template = {
         </div>
     `,
 
-    opcionalSimples: `
+  opcionalSimples: `
         <section class="opcionais-simples">
             <p class="title-categoria mb-0"><b>Opcionais</b></p>
             <div class="container-group mb-5" id="listaOpcionaisSimples">
@@ -1257,7 +1250,7 @@ cardapio.template = {
         </section>
     `,
 
-    opcionalItem: `
+  opcionalItem: `
         <div class="card card-opcionais mt-2">
             <div class="infos-produto-opcional">
                 <p class="name mb-0"><b>\${nome}</b></p>
@@ -1272,7 +1265,7 @@ cardapio.template = {
         </div>
     `,
 
-    opcionalItemSimples: `
+  opcionalItemSimples: `
         <div class="card card-opcionais mt-2">
             <div class="infos-produto-opcional">
                 <p class="name mb-0"><b>\${nome}</b></p>
@@ -1287,5 +1280,4 @@ cardapio.template = {
             </div>
         </div>
     `,
-
-}
+};
