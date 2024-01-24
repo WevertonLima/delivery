@@ -133,6 +133,27 @@ pedido.method = {
         break;
     }
   },
+
+  imprimirPedido: () => {
+    console.log("imprimir");
+
+    // Captura o conteúdo do modal
+    const conteudoModal = document.getElementById("modalDetalhes").innerHTML;
+
+    // Cria uma nova janela de impressão
+    const janelaDeImpressao = window.open("", "", "width=600,height=600");
+
+    // Abre a janela de impressão e insere o conteúdo do modal nela
+    janelaDeImpressao.document.write(
+      "<html><head><title>Impressão do Pedido</title></head><body>"
+    );
+    janelaDeImpressao.document.write(conteudoModal);
+    janelaDeImpressao.document.write("</body></html>");
+
+    // Imprime a janela de impressão
+    janelaDeImpressao.print();
+    janelaDeImpressao.close();
+  },
 };
 
 pedido.template = {
