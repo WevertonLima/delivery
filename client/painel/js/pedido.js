@@ -18,16 +18,27 @@ pedido.event = {
     setTimeout(() => {
       app.method.loading(false);
     }, 1000);
+
+    var modalDetalhe = document.getElementsById("modalDetalhes");
+
+    modalDetalhe.addEventListener("show.bs.modal", (event) => {
+      var button = event.relatedTarget;
+      var idPedido = button.getAttribute("data-code");
+
+      pedido.method.OpenPedidoModal(idPedido);
+    });
   },
 };
 
 pedido.method = {
+  openPedidoModal: (idPedido) => {
+    app.method.get("/pedido/obterpedido/" + idPedido, (response) => {});
+  },
+
   obterPedidos: (idpedidostatus) => {
     app.method.loading(true);
     document.getElementById("pedidosMenu").innerHTML = "";
-
     PEDIDOS = [];
-
     app.method.get(
       "/pedido/status/" + idpedidostatus,
       (response) => {
@@ -50,6 +61,7 @@ pedido.method = {
       }
     );
   },
+
   // carrega as categorias na tela
   carregarPedidos: (lista) => {
     if (lista.length > 0) {
@@ -184,7 +196,7 @@ pedido.template = {
         </div>
         <p class="numero-pedido mt-2">#1</p>
     </div>
-    <div class="card-content" data-bs-toggle="modal" data-bs-target="#modalDetalhes">
+    <div class="card-content" data-bs-toggle="modal" data-bs-target="#modalDetalhes" data-code="\${id}">
         <div class="card-pedido-body mt-3">
             <p class="info-pedido">
                 <i class="fas fa-user"></i> \${nomecliente}

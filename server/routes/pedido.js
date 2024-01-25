@@ -5,6 +5,7 @@ const Acesso = new UsuarioTokenAcesso();
 module.exports = (server) => {
   // obtem as categorias em ordem para listar no cardapio
   server.get("/pedido/status/:idpedidostatus", async (req, res) => {
+    console.log("Opa");
     const result = await ct.controllers().listarTodas(req);
     res.send(result);
   });
