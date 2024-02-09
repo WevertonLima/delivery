@@ -263,8 +263,8 @@ const controllers = () => {
   // obtem o pedido por id
   const obterPedidoPorId = async (req) => {
     try {
-      var hash = req.params.idpedido;
-      var idpedido = hash.toString().substr(13, hash.length);
+      var idpedido = req.params.idpedido;
+      //var idpedido = hash.toString().substr(13, hash.length);
 
       console.log("idpedido", idpedido);
 
@@ -272,6 +272,9 @@ const controllers = () => {
         "obterPedidoPorId",
         "pedido"
       );
+
+      console.log(ComandoSQL, idpedido);
+
       var pedido = await db.Query(ComandoSQL, { idpedido: idpedido });
 
       return {

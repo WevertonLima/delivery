@@ -1,9 +1,29 @@
+--INIT#listarTodasAtivas#
+
+SELECT 
+    idcategoria
+	, nome
+    , icone
+	, ativo
+FROM 
+	categoria 
+WHERE
+	apagado = 0
+AND
+    ativo = 1
+ORDER BY
+	-ordem DESC, idcategoria ASC
+
+--END#listarTodasAtivas#
+
+
 --INIT#listarTodas#
 
 SELECT 
     idcategoria
 	, nome
     , icone
+	, ativo
 FROM 
 	categoria 
 WHERE
@@ -12,6 +32,7 @@ ORDER BY
 	-ordem DESC, idcategoria ASC
 
 --END#listarTodas#
+
 
 --INIT#atualizarCategoria#
 
@@ -69,3 +90,24 @@ WHERE
 	idcategoria = @idcategoria
 
 --END#removerPorId#
+
+--INIT#ativarCategoria#
+UPDATE
+	categoria
+SET
+	ativo = @ativo
+WHERE
+	idcategoria = @idcategoria
+
+--END#ativarCategoria#
+
+
+--INIT#ativarProdutoPorCategoria#
+UPDATE
+	produto
+SET
+	ativo = @ativo
+WHERE
+	idcategoria = @idcategoria
+
+--END#ativarProdutoPorCategoria#

@@ -56,13 +56,18 @@ SELECT
     , te.valor AS taxaentrega
     , te.tempominimo AS entregatempominimo
     , te.tempomaximo AS entregatempomaximo
+    , pi.idpedidoitem
+    , pi.idproduto
+    , pi.quantidade
+    , pi.observacao
 FROM
     pedido AS p
     JOIN pedidostatus AS ps ON ps.idpedidostatus = p.idpedidostatus
     JOIN formapagamento AS fa ON fa.idformapagamento = p.idformapagamento
+    JOIN pedidoitem AS pi ON p.idpedido = pi.idpedido
     LEFT JOIN taxaentrega AS te ON te.idtaxaentrega = p.idtaxaentrega
 WHERE
-    idpedido = @idpedido
+    p.idpedido = @idpedido
 
 --END#obterPedidoPorId#
 

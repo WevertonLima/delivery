@@ -1,262 +1,328 @@
-const AcessoDados = require('../db/acessodados.js');
+const AcessoDados = require("../db/acessodados.js");
 const db = new AcessoDados();
-const ReadCommandSql = require('../common/readCommandSql.js');
+const ReadCommandSql = require("../common/readCommandSql.js");
 const readCommandSql = new ReadCommandSql();
 
-const ctImagem = require('../controllers/imagem')
+const ctImagem = require("../controllers/imagem");
 
 const controllers = () => {
+  // Lista as categorias no cardápio
+  const listarTodasAtivas = async (req) => {
+    try {
+      var ComandoSQL = await readCommandSql.retornaStringSql(
+        "listarTodasAtivas",
+        "categoria"
+      );
+      var result = await db.Query(ComandoSQL);
 
-    // Lista as categorias no cardápio
-    const listarTodas = async (req) => {
-
-        try {
-
-            var ComandoSQL = await readCommandSql.retornaStringSql('listarTodas', 'categoria');
-            var result = await db.Query(ComandoSQL);
-
-            return {
-                status: 'success',
-                data: result,
-            }
-
-        } catch (ex) {
-            console.log(ex);
-            return {
-                status: 'error',
-                message: 'Falha ao obter as categorias.'
-            }
-        }
-
+      return {
+        status: "success",
+        data: result,
+      };
+    } catch (ex) {
+      console.log(ex);
+      return {
+        status: "error",
+        message: "Falha ao obter as categorias.",
+      };
     }
+  };
+  // Lista as categorias no cardápio
+  const listarTodas = async (req) => {
+    try {
+      var ComandoSQL = await readCommandSql.retornaStringSql(
+        "listarTodas",
+        "categoria"
+      );
+      var result = await db.Query(ComandoSQL);
 
-    // Salva os dados da categoria
-    const salvarDados = async (req) => {
-
-        try {
-
-            // valida se é pra adicionar ou atualizar uma categoria
-
-            var idcategoria = req.body.idcategoria;
-
-            if (idcategoria > 0) {
-
-                // atualizar categoria
-
-                var ComandoSQL = await readCommandSql.retornaStringSql('atualizarCategoria', 'categoria');
-                var result = await db.Query(ComandoSQL, req.body);
-
-                console.log(result);
-
-                return {
-                    status: "success",
-                    message: "Categoria atualizada com sucesso!"
-                }
-
-            }
-            else {
-
-                // adicionar categoria
-
-                var ComandoSQL = await readCommandSql.retornaStringSql('adicionarCategoria', 'categoria');
-                var result = await db.Query(ComandoSQL, req.body);
-
-                console.log(result);
-
-                return {
-                    status: "success",
-                    message: "Categoria adicionada com sucesso!"
-                }
-
-            }
-
-        } catch (ex) {
-            return {
-                status: "error",
-                message: "Falha ao salvar categoria. Tente novamente.",
-                ex: ex
-            }
-        }
-
+      return {
+        status: "success",
+        data: result,
+      };
+    } catch (ex) {
+      console.log(ex);
+      return {
+        status: "error",
+        message: "Falha ao obter as categorias.",
+      };
     }
+  };
+  // Salva os dados da categoria
+  const salvarDados = async (req) => {
+    try {
+      // valida se é pra adicionar ou atualizar uma categoria
 
-    // Ordena as categorias
-    const ordenarCategorias = async (req) => {
+      var idcategoria = req.body.idcategoria;
 
-        try {
+      if (idcategoria > 0) {
+        // atualizar categoria
 
-            var lista = req.body;
+        var ComandoSQL = await readCommandSql.retornaStringSql(
+          "atualizarCategoria",
+          "categoria"
+        );
+        var result = await db.Query(ComandoSQL, req.body);
 
-            console.log('Inicio')
+        console.log(result);
 
-            const promises = await lista.map(async elem => {
-                new Promise(async (resolve, reject) => {
+        return {
+          status: "success",
+          message: "Categoria atualizada com sucesso!",
+        };
+      } else {
+        // adicionar categoria
 
-                    var ComandoSQL = await readCommandSql.retornaStringSql('atualizarOrdemCategoria', 'categoria');
-                    await db.Query(ComandoSQL, elem);
+        var ComandoSQL = await readCommandSql.retornaStringSql(
+          "adicionarCategoria",
+          "categoria"
+        );
+        var result = await db.Query(ComandoSQL, req.body);
 
-                    resolve(elem);
+        console.log(result);
 
-                });
-            })
-
-            console.log('Fim')
-
-            await Promise.all(promises);
-
-            return {
-                status: 'success',
-                message: 'Categorias ordenadas com sucesso.'
-            }
-
-        } catch (ex) {
-            console.log(ex);
-            return {
-                status: 'error',
-                message: 'Falha ao ordenar as categorias.'
-            }
-        }
-
+        return {
+          status: "success",
+          message: "Categoria adicionada com sucesso!",
+        };
+      }
+    } catch (ex) {
+      return {
+        status: "error",
+        message: "Falha ao salvar categoria. Tente novamente.",
+        ex: ex,
+      };
     }
+  };
 
-    // Duplica a categoria
-    const duplicarCategoria = async (req) => {
+  // Ordena as categorias
+  const ordenarCategorias = async (req) => {
+    try {
+      var lista = req.body;
 
-        try {
+      console.log("Inicio");
 
-            var idcategoria = req.body.idcategoria;
+      const promises = await lista.map(async (elem) => {
+        new Promise(async (resolve, reject) => {
+          var ComandoSQL = await readCommandSql.retornaStringSql(
+            "atualizarOrdemCategoria",
+            "categoria"
+          );
+          await db.Query(ComandoSQL, elem);
 
-            // primeiro, obtem todos os produtos da categoria
+          resolve(elem);
+        });
+      });
 
-            var ComandoSQLProdutos = await readCommandSql.retornaStringSql('obterPorCategoriaIdSemOrdenacao', 'produto');
-            var produtos_categoria = await db.Query(ComandoSQLProdutos, { idcategoria: idcategoria });
+      console.log("Fim");
 
-            // depois, obtem as informações da categoria
+      await Promise.all(promises);
 
-            var ComandoSQLCategoria = await readCommandSql.retornaStringSql('obterPorId', 'categoria');
-            var dados_categoria = await db.Query(ComandoSQLCategoria, { idcategoria: idcategoria });
-
-            // altera o nome para "Cópia" e insere no banco de dados
-
-            dados_categoria[0].nome = dados_categoria[0].nome + " - Cópia";
-
-            var ComandoSQLAddCategoria = await readCommandSql.retornaStringSql('adicionarCategoria', 'categoria');
-            var nova_categoria = await db.Query(ComandoSQLAddCategoria, dados_categoria[0]);
-
-            if (nova_categoria.insertId != undefined && nova_categoria.insertId > 0) {
-
-                // percorre os produtos e adiciona na nova categoria
-
-                console.log('Inicio')
-
-                const promises = await produtos_categoria.map(async elem => {
-
-                    const idImagemNovo = new Date().valueOf();
-
-                    var ComandoSQLAddProduto = await readCommandSql.retornaStringSql('adicionarProduto', 'produto');
-                    await db.Query(ComandoSQLAddProduto, {
-                        idcategoria: nova_categoria.insertId,
-                        nome: elem.nome,
-                        descricao: elem.descricao,
-                        valor: elem.valor,
-                        imagem: idImagemNovo + "-" + elem.imagem,
-                        ordem: elem.ordem
-                    });
-
-                    // faz uma cópia da imagem para pasta
-                    await ctImagem.controllers().copy(elem.imagem, idImagemNovo);
-
-                })
-
-                await Promise.all(promises);
-
-                console.log('fim')
-
-                return {
-                    status: 'success',
-                    message: 'Categoria duplicada com sucesso.'
-                }
-
-            }
-            else {
-                return {
-                    status: 'error',
-                    message: 'Falha ao duplicar a categoria.'
-                }
-            }
-
-        } catch (ex) {
-            console.log(ex);
-            return {
-                status: 'error',
-                message: 'Falha ao duplicar a categoria.'
-            }
-        }
-
+      return {
+        status: "success",
+        message: "Categorias ordenadas com sucesso.",
+      };
+    } catch (ex) {
+      console.log(ex);
+      return {
+        status: "error",
+        message: "Falha ao ordenar as categorias.",
+      };
     }
+  };
 
-    // Remover a categoria
-    const removerCategoria = async (req) => {
+  // Duplica a categoria
+  const duplicarCategoria = async (req) => {
+    try {
+      var idcategoria = req.body.idcategoria;
 
-        try {
+      // primeiro, obtem todos os produtos da categoria
 
-            var idcategoria = req.body.idcategoria;
+      var ComandoSQLProdutos = await readCommandSql.retornaStringSql(
+        "obterPorCategoriaIdSemOrdenacao",
+        "produto"
+      );
+      var produtos_categoria = await db.Query(ComandoSQLProdutos, {
+        idcategoria: idcategoria,
+      });
 
-            // obtem todos os produtos da categoria (para remover as imagens)
-            var ComandoSQLSelectProdutos = await readCommandSql.retornaStringSql('obterPorCategoriaIdSemOrdenacao', 'produto');
-            var produtos_categoria = await db.Query(ComandoSQLSelectProdutos, { idcategoria: idcategoria });
+      // depois, obtem as informações da categoria
 
-            // agora remove todos os produtos da categoria
+      var ComandoSQLCategoria = await readCommandSql.retornaStringSql(
+        "obterPorId",
+        "categoria"
+      );
+      var dados_categoria = await db.Query(ComandoSQLCategoria, {
+        idcategoria: idcategoria,
+      });
 
-            var ComandoSQLProdutos = await readCommandSql.retornaStringSql('removerPorCategoriaId', 'produto');
-            await db.Query(ComandoSQLProdutos, { idcategoria: idcategoria });
+      // altera o nome para "Cópia" e insere no banco de dados
 
-            // depois, remove a categoria
+      dados_categoria[0].nome = dados_categoria[0].nome + " - Cópia";
 
-            var ComandoSQLCategoria = await readCommandSql.retornaStringSql('removerPorId', 'categoria');
-            await db.Query(ComandoSQLCategoria, { idcategoria: idcategoria });
+      var ComandoSQLAddCategoria = await readCommandSql.retornaStringSql(
+        "adicionarCategoria",
+        "categoria"
+      );
+      var nova_categoria = await db.Query(
+        ComandoSQLAddCategoria,
+        dados_categoria[0]
+      );
 
-            // por fim, remove as imagens dos produtos da pasta
+      if (nova_categoria.insertId != undefined && nova_categoria.insertId > 0) {
+        // percorre os produtos e adiciona na nova categoria
 
-            const promises = await produtos_categoria.map(async elem => {
+        console.log("Inicio");
 
-                // cria um objeto da mesma estrutura que o método espera
-                const requisicao = {
-                    body: {
-                        imagem: elem.imagem
-                    }
-                }
+        const promises = await produtos_categoria.map(async (elem) => {
+          const idImagemNovo = new Date().valueOf();
 
-                // remove a imagem
-                await ctImagem.controllers().remove(requisicao);
+          var ComandoSQLAddProduto = await readCommandSql.retornaStringSql(
+            "adicionarProduto",
+            "produto"
+          );
+          await db.Query(ComandoSQLAddProduto, {
+            idcategoria: nova_categoria.insertId,
+            nome: elem.nome,
+            descricao: elem.descricao,
+            valor: elem.valor,
+            imagem: idImagemNovo + "-" + elem.imagem,
+            ordem: elem.ordem,
+          });
 
-            })
+          // faz uma cópia da imagem para pasta
+          await ctImagem.controllers().copy(elem.imagem, idImagemNovo);
+        });
 
-            await Promise.all(promises);
+        await Promise.all(promises);
 
-            return {
-                status: 'success',
-                message: 'Categoria removida.'
-            }
+        console.log("fim");
 
-        } catch (ex) {
-            console.log(ex);
-            return {
-                status: 'error',
-                message: 'Falha ao remover a categoria.'
-            }
-        }
-
+        return {
+          status: "success",
+          message: "Categoria duplicada com sucesso.",
+        };
+      } else {
+        return {
+          status: "error",
+          message: "Falha ao duplicar a categoria.",
+        };
+      }
+    } catch (ex) {
+      console.log(ex);
+      return {
+        status: "error",
+        message: "Falha ao duplicar a categoria.",
+      };
     }
+  };
 
-    return Object.create({
-        listarTodas
-        , salvarDados
-        , ordenarCategorias
-        , duplicarCategoria
-        , removerCategoria
-    })
+  // Remover a categoria
+  const removerCategoria = async (req) => {
+    try {
+      var idcategoria = req.body.idcategoria;
 
-}
+      // obtem todos os produtos da categoria (para remover as imagens)
+      var ComandoSQLSelectProdutos = await readCommandSql.retornaStringSql(
+        "obterPorCategoriaIdSemOrdenacao",
+        "produto"
+      );
+      var produtos_categoria = await db.Query(ComandoSQLSelectProdutos, {
+        idcategoria: idcategoria,
+      });
 
-module.exports = Object.assign({ controllers })
+      // agora remove todos os produtos da categoria
+
+      var ComandoSQLProdutos = await readCommandSql.retornaStringSql(
+        "removerPorCategoriaId",
+        "produto"
+      );
+      await db.Query(ComandoSQLProdutos, { idcategoria: idcategoria });
+
+      // depois, remove a categoria
+
+      var ComandoSQLCategoria = await readCommandSql.retornaStringSql(
+        "removerPorId",
+        "categoria"
+      );
+      await db.Query(ComandoSQLCategoria, { idcategoria: idcategoria });
+
+      // por fim, remove as imagens dos produtos da pasta
+
+      const promises = await produtos_categoria.map(async (elem) => {
+        // cria um objeto da mesma estrutura que o método espera
+        const requisicao = {
+          body: {
+            imagem: elem.imagem,
+          },
+        };
+
+        // remove a imagem
+        await ctImagem.controllers().remove(requisicao);
+      });
+
+      await Promise.all(promises);
+
+      return {
+        status: "success",
+        message: "Categoria removida.",
+      };
+    } catch (ex) {
+      console.log(ex);
+      return {
+        status: "error",
+        message: "Falha ao remover a categoria.",
+      };
+    }
+  };
+
+  const ativarCategoria = async (req) => {
+    try {
+      // valida se é pra ativar um produto
+
+      var idcategoria = req.body.idcategoria;
+
+      if (idcategoria > 0) {
+        // atualizar categoria
+
+        var ComandoSQL = await readCommandSql.retornaStringSql(
+          "ativarCategoria",
+          "categoria"
+        );
+        var result = await db.Query(ComandoSQL, req.body);
+
+        ComandoSQL = await readCommandSql.retornaStringSql(
+          "ativarProdutoPorCategoria",
+          "categoria"
+        );
+
+        result = await db.Query(ComandoSQL, req.body);
+
+        console.log(result);
+
+        return {
+          status: "success",
+          message: "Categoria atualizada com sucesso!",
+        };
+      }
+    } catch (ex) {
+      return {
+        status: "error",
+        message: "Falha ao ativar categoria. Tente novamente.",
+        ex: ex,
+      };
+    }
+  };
+
+  return Object.create({
+    listarTodas,
+    listarTodasAtivas,
+    salvarDados,
+    ordenarCategorias,
+    duplicarCategoria,
+    removerCategoria,
+    ativarCategoria,
+  });
+};
+
+module.exports = Object.assign({ controllers });

@@ -73,7 +73,7 @@ cardapio.method = {
     CATEGORIAS = [];
 
     app.method.get(
-      "/categoria",
+      "/categoria/all",
       (response) => {
         console.log("response", response);
         app.method.loading(false);
@@ -117,6 +117,14 @@ cardapio.method = {
         // último item, inicia o evento de tooltip
         if (i + 1 == lista.length) {
           $('[data-toggle="tooltip"]').tooltip();
+        }
+      });
+
+      lista.forEach((e) => {
+        if (e.ativo === 1) {
+          $("#chkCategoriaAtivo-" + e.idcategoria).prop("checked", true);
+        } else {
+          $("#chkCategoriaAtivo-" + e.idcategoria).prop("checked", false);
         }
       });
     } else {
@@ -445,6 +453,37 @@ cardapio.method = {
         app.method.mensagem(response.message, "green");
 
         cardapio.method.obterCategorias();
+      },
+      (error) => {
+        app.method.loading(false);
+        console.log("error", error);
+      }
+    );
+  },
+
+  changeCategoriaAtivo: (id) => {
+    var isCheck = document.querySelector("#chkCategoriaAtivo-" + id).checked;
+    var dados = {
+      idcategoria: id,
+      ativo: isCheck ? 1 : 0,
+    };
+
+    app.method.post(
+      "/categoria/ativar",
+      JSON.stringify(dados),
+      (response) => {
+        console.log(response);
+
+        app.method.loading(false);
+
+        $(".categoria-" + id).prop("checked", isCheck);
+
+        if (response.status === "error") {
+          app.method.mensagem(response.message);
+          return;
+        }
+
+        app.method.mensagem(response.message, "green");
       },
       (error) => {
         app.method.loading(false);
@@ -1336,6 +1375,10 @@ cardapio.template = {
                     <a href="#!" class="icon-action" data-toggle="tooltip" data-placement="top" title="Remover" onclick="cardapio.method.abrirModalRemoverCategoria('\${id}')">
                         <i class="fas fa-trash-alt"></i>
                     </a>
+                    <label class="switch mt-2">
+                      <input type="checkbox" id="chkCategoriaAtivo-\${id}" onchange="cardapio.method.changeCategoriaAtivo('\${id}')">
+                      <span class="slider round"></span>
+                  </label>
                 </div>
             </div>
 
@@ -1395,7 +1438,7 @@ cardapio.template = {
                     <i class="fas fa-trash-alt"></i>
                 </a>
                 <label class="switch mt-2">
-                    <input type="checkbox" id="chkProdutoAtivo-\${id}" onchange="cardapio.method.changeProdutoAtivo('\${id}')">
+                    <input type="checkbox" id="chkProdutoAtivo-\${id}" onchange="cardapio.method.changeProdutoAtivo('\${id}')" class="categoria-\${idcategoria}">
                     <span class="slider round"></span>
                 </label>
             </div>

@@ -14,6 +14,7 @@ var MODAL_DETALHES = new bootstrap.Modal(
 pedido.event = {
   init: () => {
     pedido.method.obterUltimoPedido();
+
     setInterval(() => {
       pedido.method.obterUltimoPedido();
     }, 15000);
