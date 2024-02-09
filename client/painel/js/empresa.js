@@ -587,7 +587,7 @@ empresa.method = {
 
         });
 
-        if (!continuar) {
+        if (!continuar || _horarios.length <= 0) {
             return;
         }
 
