@@ -10,6 +10,8 @@ var PRODUTOS = [];
 var CATEGORIA_ID = 0;
 var PRODUTO_ID = 0;
 
+var OPCIONAL_ITEM_ID = 0;
+
 let DROP_AREA = document.getElementById("drop-area");
 
 cardapio.event = {
@@ -968,11 +970,15 @@ cardapio.method = {
     }
   },
 
-  // abre ou fecha o container de adicionar opcional
-  abrirModalAddOpcional: () => {
-    // limpa os campos
-    $("#container-chkOpcionalSimples").removeClass("hidden");
-    $("#container-chkSelecaoOpcoes").addClass("hidden");
+    // abre ou fecha o container de adicionar opcional
+    abrirModalAddOpcional: () => {
+
+        // fecha a modal de opcionais
+        $('#modalOpcionaisProduto').modal('hide');
+
+        // limpa os campos
+        $("#container-chkOpcionalSimples").removeClass('hidden');
+        $("#container-chkSelecaoOpcoes").addClass('hidden');
 
     $("#txtNomeSimples").val("");
     $("#txtPrecoSimples").val("");
@@ -1095,25 +1101,216 @@ cardapio.method = {
       (response) => {
         console.log(response);
 
-        app.method.loading(false);
+        let simples = $("#chkOpcionalSimples").prop('checked');
+        let opcoes = $("#chkSelecaoOpcoes").prop('checked');
 
-        if (response.status === "error") {
-          app.method.mensagem(response.message);
-          return;
+        // Se for opcional simples
+        if (simples) {
+
+            let nomesimples = $("#txtNomeSimples").val().trim();
+            let precosimples = parseFloat($("#txtPrecoSimples").val().replace(/\./g, '').replace(',', '.'));
+
+            if (nomesimples.length <= 0) {
+                app.method.mensagem("Informe o nome do opcional, por favor.")
+                return;
+            }
+
+            // valida se o valor é um número (se não está vazio) e se é = 0 ou menor
+            if (isNaN(precosimples) || precosimples <= 0) {
+                app.method.mensagem("Informe o valor do opcional, por favor.")
+                return;
+            }
+
+            var dados = {
+                nome: nomesimples,
+                valor: precosimples,
+                simples: true,
+                idproduto: PRODUTO_ID
+            }
+
+            cardapio.method.salvarOpcionalProduto(dados);
+
         }
 
-        app.method.mensagem(response.message, "green");
-      },
-      (error) => {
-        app.method.loading(false);
-        console.log("error", error);
-      }
-    );
-  },
+        // Se for seleção de opções
+        if (opcoes) {
 
-  // valida os campos para salvar o opcional
-  salvarOpcional: () => {},
-};
+            let tituloSecao = $("#txtTituloSecao").val().trim();
+            let minimoOpcao = parseInt($("#txtMinimoOpcao").val());
+            let maximoOpcao = parseInt($("#txtMaximoOpcao").val());
+
+            if (tituloSecao.length <= 0) {
+                app.method.mensagem("Informe o título da seção, por favor.")
+                return;
+            }
+
+            if (minimoOpcao.length <= 0) {
+                app.method.mensagem("Informe o mínimo, por favor.")
+                return;
+            }
+
+            if (maximoOpcao.length <= 0) {
+                app.method.mensagem("Informe o máximo, por favor.")
+                return;
+            }
+
+            let _opcoes = [];
+            let continuar = true;
+
+            // valida se tem alguma linha sem registros;
+            document.querySelectorAll('#listaOpcoesSelecao .linha').forEach((e, i) => {
+                let _id = e.id.split('-')[1];
+
+                let nomesimples = $('#txtNomeSimples-' + _id).val().trim();
+                let precosimples = parseFloat($('#txtPrecoSimples-' + _id).val().replace(/\./g, '').replace(',', '.'));
+
+                // valida os campos obrigatórios
+                if (nomesimples.length <= 0 || isNaN(precosimples) || precosimples <= 0) {
+                    continuar = false;
+                    app.method.mensagem('Alguns campos não foram preenchidos.');
+                }
+
+                _opcoes.push({
+                    nome: nomesimples,
+                    valor: precosimples,
+                })
+
+            });
+
+            if (!continuar) {
+                return;
+            }
+
+            if (_opcoes.length <= 0) {
+                app.method.mensagem('Adicione pelo menos 1 opção para continuar.');
+                return;
+            }
+
+            console.log('_opcoes', _opcoes);
+
+            var dados = {
+                titulo: tituloSecao,
+                minimoOpcao: minimoOpcao,
+                maximoOpcao: maximoOpcao,
+                simples: false,
+                idproduto: PRODUTO_ID,
+                lista: _opcoes
+            }
+
+            cardapio.method.salvarOpcionalProduto(dados);
+
+        }
+
+
+    },
+
+    // método que envia a requisição pra api
+    salvarOpcionalProduto: (dados) => {
+
+        app.method.loading(true);
+
+        app.method.post('/opcional/produto', JSON.stringify(dados),
+            (response) => {
+                console.log(response)
+
+                app.method.loading(false);
+
+                if (response.status === 'error') {
+                    app.method.mensagem(response.message);
+                    return;
+                }
+
+                app.method.mensagem(response.message, 'green');
+
+                $('#modalAddOpcionalProduto').modal('hide');
+
+                cardapio.method.abrirModalOpcionaisProduto(CATEGORIA_ID, PRODUTO_ID);
+
+            },
+            (error) => {
+                app.method.loading(false);
+                console.log('error', error)
+            }
+        )
+
+    },
+
+    // fecha a modal de add opcional e re-abre a modal da lista de opcionais
+    fecharModalAddOpcionalProduto: () => {
+
+        $('#modalOpcionaisProduto').modal({ backdrop: 'static' });
+        $('#modalOpcionaisProduto').modal('show');
+
+    },
+
+    // abre a modal para remover o opcional item
+    abrirModalRemoverOpcionalItem: (idopcionalitem) => {
+
+        OPCIONAL_ITEM_ID = idopcionalitem;
+        $('#modalRemoverOpcionalItem').modal('show');
+
+    },
+
+    // remove o opcional item
+    removerOpcionalItem: () => {
+
+        if (OPCIONAL_ITEM_ID > 0) {
+
+            var dados = {
+                idopcionalitem: OPCIONAL_ITEM_ID
+            }
+
+            app.method.post('/opcional/item/remover', JSON.stringify(dados),
+                (response) => {
+                    console.log(response)
+
+                    app.method.loading(false);
+
+                    if (response.status === 'error') {
+                        app.method.mensagem(response.message);
+                        return;
+                    }
+
+                    app.method.mensagem(response.message, 'green');
+
+                    $('#modalRemoverOpcionalItem').modal('hide');
+
+                    OPCIONAL_ITEM_ID = 0;
+
+                    cardapio.method.abrirModalOpcionaisProduto(CATEGORIA_ID, PRODUTO_ID);
+
+                },
+                (error) => {
+                    app.method.loading(false);
+                    console.log('error', error)
+                }
+            )
+
+        }
+
+    },
+
+    // adiciona uma linha no opcional de seleção
+    adicionarLinhaOpcao: () => {
+
+        // cria um id aleatorio
+        let id = Math.floor(Date.now() * Math.random()).toString();
+
+        let temp = cardapio.template.opcaoSelecao.replace(/\${id}/g, id);
+
+        $("#listaOpcoesSelecao").append(temp);
+
+        // máscara para o campo de valor
+        $('.money').mask('#.##0,00', { reverse: true });
+
+    },
+
+    // remover linha do opcional
+    removerLinhaOpcao: (id) => {
+        document.getElementById(`opcao-${id}`).remove();
+    },
+
+}
 
 cardapio.template = {
   categoria: `
@@ -1255,10 +1452,11 @@ cardapio.template = {
                 <p class="price mb-0"><b>\${valor}</b></p>
             </div>
             <div class="checks">
-                <label class="container-check">
-                    <input id="check-opcional-\${idopcionalitem}" type="checkbox" class="paiopcional-\${idopcional}" onchange="item.method.selecionarOpcional('\${idopcionalitem}', \${idopcional})">
-                    <span class="checkmark"></span>
-                </label>
+                <div class="actions">
+                    <a href="#!" class="icon-action" data-toggle="tooltip" data-placement="top" title="" onclick="cardapio.method.abrirModalRemoverOpcionalItem('\${idopcionalitem}')" data-bs-original-title="Remover">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                </div>
             </div>
         </div>
     `,

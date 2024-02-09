@@ -610,9 +610,9 @@ empresa.method = {
       });
     });
 
-    if (!continuar) {
-      return;
-    }
+        if (!continuar || _horarios.length <= 0) {
+            return;
+        }
 
     console.log("_horarios", _horarios);
 

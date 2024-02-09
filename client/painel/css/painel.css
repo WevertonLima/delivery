@@ -876,12 +876,12 @@ div#addOpcional {
     font-size: 11px;
 }
 
-.container-group {
+#modalOpcionaisProduto .container-group {
     padding-bottom: 30px;
     margin-bottom: 30px!important;
     border-bottom: 2px dashed var(--color-input-out);
 }
 
-.container-group:last-child {
+#modalOpcionaisProduto .container-group:last-child {
     border-bottom: none;
 }

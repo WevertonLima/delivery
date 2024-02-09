@@ -9,11 +9,11 @@ module.exports = (server) => {
     res.send(result);
   });
 
-  // obtem a lista de produtos para exibir no cardápio
-  server.post("/pedido/taxa", async (req, res) => {
-    const result = await ct.controllers().calcularTaxaDelivery(req);
-    res.send(result);
-  });
+    // calcula a taxa do delivery
+    server.post('/pedido/taxa', async (req, res) => {
+        const result = await ct.controllers().calcularTaxaDelivery(req);
+        res.send(result);
+    });
 
   // cria um novo pedido
   server.post("/pedido", async (req, res) => {

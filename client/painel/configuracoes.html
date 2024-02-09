@@ -173,7 +173,7 @@
                                     <div class="group-select">
                                         <div class="checks">
                                             <label class="container-check">
-                                                <input type="checkbox" checked>
+                                                <input type="checkbox" id="chkSemTaxa" onchange="config.method.openTabTaxa('container-sem-taxa', 'chkSemTaxa')">
                                                 <span class="checkmark"></span>
                                                 Sem taxa
                                             </label> 
@@ -185,7 +185,7 @@
                                     <div class="group-select">
                                         <div class="checks">
                                             <label class="container-check">
-                                                <input type="checkbox">
+                                                <input type="checkbox" id="chkTaxaUnica" onchange="config.method.openTabTaxa('container-taxa-unica', 'chkTaxaUnica')">
                                                 <span class="checkmark"></span>
                                                 Taxa única
                                             </label> 
@@ -197,7 +197,7 @@
                                     <div class="group-select">
                                         <div class="checks">
                                             <label class="container-check">
-                                                <input type="checkbox">
+                                                <input type="checkbox" id="chkTaxaDistancia" onchange="config.method.openTabTaxa('container-taxa-distancia', 'chkTaxaDistancia')">
                                                 <span class="checkmark"></span>
                                                 Taxa por distância
                                             </label> 
@@ -206,7 +206,7 @@
                                 </div>
                             </div>
 
-                            <div class="container-group mb-3" id="container-sem-taxa">
+                            <div class="container-group mb-3 hidden tab-item-taxa" id="container-sem-taxa">
                                 <div class="card card-address mt-4">
                                     <div class="infos">
                                         <p class="name mb-0"><b>Nenhuma taxa será cobrada na entrega.</b></p>
@@ -215,7 +215,7 @@
                                 
                             </div>
 
-                            <div class="container-group mb-3 hidden" id="container-taxa-unica">
+                            <div class="container-group mb-3 hidden tab-item-taxa" id="container-taxa-unica">
                                 <div class="card card-address cursor-default mt-4 pb-4 ps-4 justify-content-start">
                                     <div class="tempo">
                                         <div class="form-group form-sm">
@@ -238,7 +238,7 @@
 
                             </div>
 
-                            <div class="container-group mb-3 hidden" id="container-taxa-distancia">
+                            <div class="container-group mb-3 hidden tab-item-taxa" id="container-taxa-distancia">
                                 <div class="card card-address cursor-default mt-4 pb-4 ps-4 justify-content-start">
                                     <div class="tempo">
                                         <div class="form-group form-sm">

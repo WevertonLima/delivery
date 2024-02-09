@@ -517,14 +517,9 @@
             </div>
             <div class="modal-body">
                 
-                <div class="row mb-5">
+                <div class="row">
 
-                    <div class="col-12 opcionais" id="listaOpcionaisProduto">
-
-                                        
-                    </div>
-
-                    <div class="col-12 mt-3">
+                    <div class="col-12 mb-5">
 
                         <div class="card card-select" onclick="cardapio.method.abrirModalAddOpcional()">
                             <div class="infos-produto-opcional">
@@ -532,6 +527,11 @@
                             </div>
                         </div>
 
+                    </div>
+
+                    <div class="col-12 opcionais" id="listaOpcionaisProduto">
+
+                                        
                     </div>
                    
                 </div>    
@@ -547,32 +547,22 @@
     </div>
 
     <!-- Modal de Adicionar/Editar Opcionais do Produto -->
-    <div
-      id="modalAddOpcionalProduto"
-      class="modal fade modal-form"
-      tabindex="-1"
-      role="dialog"
-      data-backdrop="static"
-    >
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title"><b>Adicionar / Editar Opcional</b></h5>
-            <button
-              type="button"
-              class="btn btn-white btn-sm"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            >
-              <i class="fas fa-times"></i>&nbsp; Fechar
-            </button>
-          </div>
-          <div class="modal-body">
-            <div class="row mb-5">
-              <div class="col-12">
-                <p class="title-categoria mb-0">
-                  <b>Selecione o tipo de opcional:</b>
-                </p>
+    <div id="modalAddOpcionalProduto" class="modal fade modal-form" tabindex="-1" role="dialog" data-backdrop="static">
+        <div class="modal-dialog modal-lg" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title"><b>Adicionar / Editar Opcional</b></h5>
+              <button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal" aria-label="Close" onclick="cardapio.method.fecharModalAddOpcionalProduto()">
+                <i class="fas fa-times"></i>&nbsp; Fechar
+              </button>
+            </div>
+            <div class="modal-body">
+                  
+                <div class="row mb-5">
+
+                    <div class="col-12">
+
+                        <p class="title-categoria mb-0"><b>Selecione o tipo de opcional:</b></p>
 
                 <div class="container-group inline mb-3">
                   <div class="card mt-3">
@@ -780,6 +770,37 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Modal de confirmação para Remover Opcional -->
+    <div id="modalRemoverOpcionalItem" class="modal fade modal-form" tabindex="-1" role="dialog" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title"><i class="fas fa-trash-alt"></i>&nbsp; <b>Remover Opcional</b></h5>
+            </div>
+            <div class="modal-body">
+                
+                <div class="row mb-5">
+
+                    <div class="col-12">
+                        <p>Deseja realmente <b>remover</b> o opcional selecionado?</p>
+                    </div>
+
+                </div>                
+
+                <div class="footer-btn mt-3">
+                    <a href="#!" class="btn btn-red btn-sm me-3" onclick="cardapio.method.removerOpcionalItem()">
+                        <i class="fas fa-trash-alt"></i>&nbsp; Remover Opcional
+                    </a>
+                    <button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>&nbsp; Cancelar
+                    </button>
+                </div>
+                
+            </div>
+          </div>
+        </div>
     </div>
 
     <script type="text/javascript" src="../js/jquery.min.js"></script>

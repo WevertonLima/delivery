@@ -10,11 +10,16 @@ module.exports = (server) => {
         res.send(result);
     });
 
-
-
     // salva o opcional do produto
     server.post('/opcional/produto', Acesso.verificaTokenAcesso, async (req, res) => {
         const result = await ct.controllers().salvarOpcionaisProduto(req);
+        res.send(result);
+    });
+
+
+    // remove o opcional item
+    server.post('/opcional/item/remover', Acesso.verificaTokenAcesso, async (req, res) => {
+        const result = await ct.controllers().removerOpcionalItem(req);
         res.send(result);
     });
 

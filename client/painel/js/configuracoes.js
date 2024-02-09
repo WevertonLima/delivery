@@ -341,7 +341,122 @@ config.method = {
 
   // -------- TAB FORMAS DE PAGAMENTO -----------
 
-  obterConfigTaxaEntrega: () => {},
+    obterConfigTaxaEntrega: () => {
+
+        app.method.loading(true);
+
+        app.method.get('/taxaentregatipo',
+            (response) => {
+
+                app.method.loading(false);
+
+                if (response.status == "error") {
+                    console.log(response.message)
+                    return;
+                }
+
+                console.log(response.data)
+
+                let taxaunica = response.data.filter((e) => { return e.idtaxaentregatipo == 1 });
+                let taxadistancia = response.data.filter((e) => { return e.idtaxaentregatipo == 2 });
+                let semtaxa = response.data.filter((e) => { return e.idtaxaentregatipo == 3 });
+
+                document.querySelector("#chkSemTaxa").checked = semtaxa[0].ativo ? true : false;
+                document.querySelector("#chkTaxaUnica").checked = taxaunica[0].ativo ? true : false;
+                document.querySelector("#chkTaxaDistancia").checked = taxadistancia[0].ativo ? true : false;
+
+                if (semtaxa[0].ativo) {
+                    document.querySelector("#container-sem-taxa").classList.remove('hidden');
+                }
+                else if (taxaunica[0].ativo) {
+                    document.querySelector("#container-taxa-unica").classList.remove('hidden');
+                }
+                else {
+                    document.querySelector("#container-taxa-distancia").classList.remove('hidden');
+                }
+
+            },
+            (error) => {
+                app.method.loading(false);
+                console.log('error', error)
+            }
+        )
+
+    },
+
+    // abre a tab da taxa selecionada
+    openTabTaxa: (tab, pai) => {
+
+        Array.from(document.querySelectorAll(".tab-item-taxa")).forEach(e => e.classList.add('hidden'));
+        document.querySelector("#" + tab).classList.remove('hidden');
+
+        document.querySelector("#chkSemTaxa").checked = false;
+        document.querySelector("#chkTaxaUnica").checked = false;
+        document.querySelector("#chkTaxaDistancia").checked = false;
+
+        document.querySelector("#" + pai).checked = true;
+
+        switch (tab) {
+            case 'container-sem-taxa':
+                config.method.obterConfigSemTaxa();
+                break;
+
+            case 'container-taxa-unica':
+                config.method.obterConfigTaxaUnica();
+                break;
+
+            case 'container-taxa-distancia':
+                config.method.obterConfigTaxaDistancia();
+                break;
+
+            default:
+                break;
+        }
+
+    },
+
+    // seta as configurações da tab de Sem taxa
+    obterConfigSemTaxa: () => {
+
+        // Primeiro, já seta a taxa como ativa
+        var dados = {
+            semtaxa: 1,
+            taxaunica: 0,
+            taxadistancia: 0
+        }
+
+        // app.method.post('/formapagamento/ativar', JSON.stringify(dados),
+        //     (response) => {
+        //         console.log(response)
+
+        //         app.method.loading(false);
+
+        //         if (response.status === 'error') {
+        //             app.method.mensagem(response.message);
+        //             return;
+        //         }
+
+        //         app.method.mensagem(response.message, 'green');
+
+        //     },
+        //     (error) => {
+        //         app.method.loading(false);
+        //         console.log('error', error)
+        //     }
+        // )
+
+    },
+
+    // seta as configurações da tab de Taxa Unica
+    obterConfigTaxaUnica: () => {
+
+    },
+
+    // seta as configurações da tab de Taxa por Distancia
+    obterConfigTaxaDistancia: () => {
+
+    },
+
 
   // -------- TAB FORMAS DE PAGAMENTO -----------
 
