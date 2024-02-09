@@ -4,7 +4,7 @@ const Acesso = new UsuarioTokenAcesso();
 
 module.exports = (server) => {
 
-    // obtem a lista de produtos para exibir no cardápio
+    // calcula a taxa do delivery
     server.post('/pedido/taxa', async (req, res) => {
         const result = await ct.controllers().calcularTaxaDelivery(req);
         res.send(result);
