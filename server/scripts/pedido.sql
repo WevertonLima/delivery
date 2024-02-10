@@ -64,3 +64,70 @@ WHERE
     idpedido = @idpedido
 
 --END#obterPedidoPorId#
+
+--INIT#obterPedidoPorStatus#
+
+SELECT
+	p.idpedido
+    , p.idpedidostatus
+    , p.idtipoentrega
+    , p.idformapagamento
+    , p.nomecliente
+    , p.datacadastro
+    , p.datafinalizado
+    , p.total
+    , p.troco
+FROM
+	pedido AS p
+WHERE
+	p.idpedidostatus = @idpedidostatus
+
+--END#obterPedidoPorStatus#
+
+
+--INIT#obterTotaisPedidos#
+
+SELECT
+	SUM(CASE WHEN idpedidostatus = 1 THEN 1 ELSE 0 END) AS `pendente`,
+    SUM(CASE WHEN idpedidostatus = 2 THEN 1 ELSE 0 END) AS `aceito`,
+    SUM(CASE WHEN idpedidostatus = 3 THEN 1 ELSE 0 END) AS `preparo`,
+    SUM(CASE WHEN idpedidostatus = 4 THEN 1 ELSE 0 END) AS `entrega`
+FROM
+	pedido
+WHERE
+    idpedidostatus <> 5
+    AND idpedidostatus <> 6;
+
+--END#obterTotaisPedidos#
+
+
+--INIT#obterItensPedido#
+
+SELECT 
+	 pi.idpedidoitem
+	 , pi.quantidade
+     , pi.observacao
+     , p.nome
+     , p.valor
+     , op.idopcionalitem
+     , op.nome as nomeopcional
+     , op.valor as valoropcional
+FROM 
+	pedidoitem AS pi
+	JOIN produto AS p ON p.idproduto = pi.idproduto
+    LEFT JOIN pedidoitemopcional AS po ON po.idpedidoitem = pi.idpedidoitem
+    LEFT JOIN opcionalitem AS op ON op.idopcionalitem = po.idopcionalitem
+WHERE
+	pi.idpedido = @idpedido
+
+--END#obterItensPedido#
+
+
+--INIT#atualizarStatusPedido#
+
+UPDATE pedido
+SET idpedidostatus = @idpedidostatus
+WHERE idpedido = @idpedido
+
+--END#atualizarStatusPedido#
+

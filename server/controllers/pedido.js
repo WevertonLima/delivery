@@ -49,7 +49,7 @@ const controllers = () => {
             }
 
             // calcula a distância em KM (a distancia vem em metros da api geo)
-            const distanciaKm = (distancia.data.features[0].properties.distance) / 1000; 
+            const distanciaKm = (distancia.data.features[0].properties.distance) / 1000;
 
             console.log('distanciaKm - ', distanciaKm)
 
@@ -72,7 +72,7 @@ const controllers = () => {
                     taxa: 0,
                     idtaxa: null
                 }
-            }            
+            }
 
         } catch (ex) {
             console.log(ex);
@@ -122,28 +122,28 @@ const controllers = () => {
 
             // calcula o total do carrinho
             if (pedido.cart.length > 0) {
-    
+
                 pedido.cart.forEach((e, i) => {
-    
+
                     let subTotal = 0;
-    
+
                     if (e.opcionais.length > 0) {
                         for (let index = 0; index < e.opcionais.length; index++) {
                             let element = e.opcionais[index];
                             subTotal += element.valoropcional * e.quantidade;
                         }
                     }
-    
+
                     subTotal += (e.quantidade * e.valor);
                     total += subTotal;
-    
+
                 });
-    
+
                 // valida se tem taxa 
                 if (pedido.taxaentrega > 0) {
                     total += pedido.taxaentrega;
                 }
-    
+
             }
 
             console.log('total', total);
@@ -152,16 +152,16 @@ const controllers = () => {
                 idpedidostatus: 1,
                 idtipoentrega: idtipoentrega,
                 idtaxaentrega: pedido.idtaxaentrega != undefined ? pedido.idtaxaentrega : null,
-                idformapagamento: pedido.idformapagamento, 
-                troco: pedido.idformapagamento == 2 ? pedido.troco : null, 
-                total: total, 
-                cep: pedido.entrega ? pedido.endereco.cep : null, 
-                endereco: pedido.entrega ? pedido.endereco.endereco : null, 
-                numero: pedido.entrega ? pedido.endereco.numero : null, 
-                bairro: pedido.entrega ? pedido.endereco.bairro : null, 
-                complemento: pedido.entrega ? pedido.endereco.complemento : null, 
-                cidade: pedido.entrega ? pedido.endereco.cidade : null, 
-                estado: pedido.entrega ? pedido.endereco.estado : null, 
+                idformapagamento: pedido.idformapagamento,
+                troco: pedido.idformapagamento == 2 ? pedido.troco : null,
+                total: total,
+                cep: pedido.entrega ? pedido.endereco.cep : null,
+                endereco: pedido.entrega ? pedido.endereco.endereco : null,
+                numero: pedido.entrega ? pedido.endereco.numero : null,
+                bairro: pedido.entrega ? pedido.endereco.bairro : null,
+                complemento: pedido.entrega ? pedido.endereco.complemento : null,
+                cidade: pedido.entrega ? pedido.endereco.cidade : null,
+                estado: pedido.entrega ? pedido.endereco.estado : null,
                 nomecliente: pedido.nomecliente,
                 telefonecliente: pedido.telefonecliente
             }
@@ -182,9 +182,9 @@ const controllers = () => {
                     pedido.cart.map(async (element) => {
 
                         var novoPedidoItem = await db.Query(ComandoSQLAddPedidoItem, {
-                            idpedido: novoPedido.insertId, 
-                            idproduto: element.idproduto, 
-                            quantidade: element.quantidade, 
+                            idpedido: novoPedido.insertId,
+                            idproduto: element.idproduto,
+                            quantidade: element.quantidade,
                             observacao: element.observacao.length > 0 ? element.observacao : null
                         });
 
@@ -196,7 +196,7 @@ const controllers = () => {
                             await Promise.all(
                                 element.opcionais.map(async (e) => {
                                     await db.Query(ComandoSQLAddPedidoItemOpcional, {
-                                        idpedidoitem: novoPedidoItem.insertId, 
+                                        idpedidoitem: novoPedidoItem.insertId,
                                         idopcionalitem: e.idopcionalitem,
                                     });
                                 })
@@ -237,16 +237,42 @@ const controllers = () => {
         try {
 
             var hash = req.params.idpedido;
-            var idpedido = hash.toString().substr(13, hash.length);
+            var idpedido = 0;
+            var painel = false;
+
+            if (hash.length >= 13) {
+                // remove os 13 primeiros numeros aleatorios e pega o ID correto
+                idpedido = hash.toString().substr(13, hash.length);
+            }
+            else {
+                idpedido = hash;
+                painel = true; //quer dizer que a busca está sendo feita pelo painel
+            }
 
             console.log('idpedido', idpedido)
 
             var ComandoSQL = await readCommandSql.retornaStringSql('obterPedidoPorId', 'pedido');
-            var pedido = await db.Query(ComandoSQL, {idpedido: idpedido});
+            var pedido = await db.Query(ComandoSQL, { idpedido: idpedido });
 
-            return {
-                status: 'success',
-                data: pedido[0]
+            // se for pelo painel, retorna o carrinho
+            if (painel) {
+
+                // busca os itens do carrinho
+                var ComandoSQLItens = await readCommandSql.retornaStringSql('obterItensPedido', 'pedido');
+                var itens = await db.Query(ComandoSQLItens, { idpedido: idpedido });
+
+                return {
+                    status: 'success',
+                    data: pedido[0],
+                    cart: itens
+                }
+
+            }
+            else {
+                return {
+                    status: 'success',
+                    data: pedido[0]
+                }
             }
 
         } catch (ex) {
@@ -259,10 +285,65 @@ const controllers = () => {
 
     }
 
+    // obtem o pedido por status
+    const obterPedidoPorStatus = async (req) => {
+
+        try {
+
+            var idpedidostatus = req.params.idpedidostatus;
+
+            var ComandoSQL = await readCommandSql.retornaStringSql('obterPedidoPorStatus', 'pedido');
+            var result = await db.Query(ComandoSQL, { idpedidostatus: idpedidostatus });
+
+            // além disso, já obtem os totais de cada tab e manda no retorno
+            var ComandoSQLTotais = await readCommandSql.retornaStringSql('obterTotaisPedidos', 'pedido');
+            var totais = await db.Query(ComandoSQLTotais);
+
+            return {
+                status: 'success',
+                data: result,
+                totais: totais[0]
+            }
+
+        } catch (ex) {
+            console.log(ex);
+            return {
+                status: 'error',
+                message: 'Falha ao obter os pedidos. Por favor, tente novamente.'
+            }
+        }
+
+    }
+
+    // atualiza o status do pedido
+    const atualizarStatusPedido = async (req) => {
+
+        try {
+
+            var ComandoSQL = await readCommandSql.retornaStringSql('atualizarStatusPedido', 'pedido');
+            var result = await db.Query(ComandoSQL, { idpedidostatus: req.body.tab, idpedido: req.body.idpedido });
+
+            return {
+                status: 'success',
+                message: 'Pedido atualizado com sucesso!'
+            }
+
+        } catch (ex) {
+            console.log(ex);
+            return {
+                status: 'error',
+                message: 'Falha ao atualizar pedido. Por favor, tente novamente.'
+            }
+        }
+
+    }
+
     return Object.create({
         calcularTaxaDelivery
         , salvarPedido
         , obterPedidoPorId
+        , obterPedidoPorStatus
+        , atualizarStatusPedido
     })
 
 }

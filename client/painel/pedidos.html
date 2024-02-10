@@ -14,6 +14,14 @@
 </head>
 <body>
 
+    <div class="container-mensagens" id="container-mensagens">
+
+    </div>
+
+    <div class="loader-full animated fadeIn hidden">
+        <img src="../img/loader.png" width="100" class="animated pulse infinite" />
+    </div>
+
     <section class="bg-menu">
 
         <div class="menu-left">
@@ -77,23 +85,23 @@
                         <div class="col-12">
                             
                             <div class="menus-pedido">
-                                <a href="#" class="btn btn-white btn-sm active">
+                                <a href="#" class="btn btn-white btn-sm tab-content"  id="tab-pendentes" onclick="pedido.method.openTab('pendentes', 1)">
                                     <i class="far fa-dot-circle"></i> Pendentes
-                                    <span class="badge-total-pedidos">2</span>
+                                    <span class="badge-total-pedidos hidden" id="badge-total-pendentes"></span>
                                 </a>
-                                <a href="#" class="btn btn-white btn-sm">
+                                <a href="#" class="btn btn-white btn-sm tab-content" id="tab-aceito" onclick="pedido.method.openTab('aceito', 2)">
                                     <i class="far fa-thumbs-up"></i> Aceito
-                                    <span class="badge-total-pedidos">1</span>
+                                    <span class="badge-total-pedidos hidden" id="badge-total-aceito"></span>
                                 </a>
-                                <a href="#" class="btn btn-white btn-sm">
+                                <a href="#" class="btn btn-white btn-sm tab-content" id="tab-preparo" onclick="pedido.method.openTab('preparo', 3)">
                                     <i class="far fa-clock"></i> Em preparo
-                                    <span class="badge-total-pedidos">1</span>
+                                    <span class="badge-total-pedidos hidden" id="badge-total-preparo"></span>
                                 </a>
-                                <a href="#" class="btn btn-white btn-sm">
+                                <a href="#" class="btn btn-white btn-sm tab-content" id="tab-entrega" onclick="pedido.method.openTab('entrega', 4)">
                                     <i class="fas fa-motorcycle"></i> Em entrega
-                                    <span class="badge-total-pedidos">1</span>
+                                    <span class="badge-total-pedidos hidden" id="badge-total-entrega"></span>
                                 </a>
-                                <a href="#" class="btn btn-white btn-sm">
+                                <a href="#" class="btn btn-white btn-sm tab-content" id="tab-concluido" onclick="pedido.method.openTab('concluido', 5)">
                                     <i class="far fa-check-circle"></i> Concluído
                                 </a>
                             </div>
@@ -101,51 +109,7 @@
                         </div>
 
                         <div class="col-12 mt-5">
-                            <div class="row lista-pedidos">
-
-                                <div class="col-3">
-                                    <div class="card card-pedido">
-                                        <div class="card-pedido-header">
-                                            <div class="dropdown">
-                                                <button class="btn btn-white btn-sm dropdown-toggle active" type="button" id="menuAcoes" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    Pendente
-                                                </button>
-                                                <div class="dropdown-menu" aria-labelledby="menuAcoes">
-                                                    <a class="dropdown-item" href="#">Mover para <b>Aceito</b> <i class="far fa-thumbs-up"></i></a>
-                                                    <a class="dropdown-item" href="#">Mover para <b>Em preparo</b> <i class="far fa-clock"></i></a>
-                                                    <a class="dropdown-item" href="#">Mover para <b>Em entrega</b> <i class="fas fa-motorcycle"></i></a>
-                                                    <a class="dropdown-item" href="#">Mover para <b>Concluído</b> <i class="far fa-check-circle"></i></a>
-                                                    <a class="dropdown-item" href="#">Recusar Pedido <i class="far fa-times-circle"></i></a>
-                                                </div>
-                                            </div>
-                                            <p class="numero-pedido mt-2">#1</p>
-                                        </div>
-                                        <div class="card-content" data-bs-toggle="modal" data-bs-target="#modalDetalhes">
-                                            <div class="card-pedido-body mt-3">
-                                                <p class="info-pedido">
-                                                    <i class="fas fa-user"></i>
-                                                    Weverton Lima
-                                                </p>
-                                                <p class="info-pedido">
-                                                    <i class="fas fa-motorcycle"></i>
-                                                    Entrega
-                                                </p>
-                                                <p class="info-pedido">
-                                                    <i class="fas fa-coins"></i>
-                                                    Dinheiro
-                                                    <span>Troco para R$ 50,00</span>
-                                                </p>
-                                            </div>
-                                            <div class="separate"></div>
-                                            
-                                            <div class="card-pedido-footer">
-                                                <p class="horario-pedido">Recebido há 33 minutos</p>
-                                                <p class="total-pedido"><b>R$ 143,50</b></p>
-                                            </div>
-                                        </div>
-                                        
-                                    </div>
-                                </div>
+                            <div class="row lista-pedidos" id="lista-pedidos">
 
                             </div>
                         </div>
@@ -154,10 +118,8 @@
                 </div>
             </section>
 
-
         </div>
         
-
     </section>
 
 
@@ -165,7 +127,7 @@
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">#1 <span class="horario-pedido">Recebido há 33 minutos</span></h5>
+              <h5 class="modal-title">Detalhes do pedido</h5>
               <button type="button" class="btn btn-white btn-sm" data-bs-dismiss="modal" aria-label="Close">
                 <i class="fas fa-times"></i>&nbsp; Fechar
               </button>
@@ -177,22 +139,17 @@
 
                         <div class="col-12">
                             <div class="card card-address cursor-default">
-                                <div class="img-icon-details">
+                                <div class="img-icon-details status">
                                     <i class="fas fa-user"></i>
                                 </div>
                                 <div class="infos pr-0">
                                     <div class="d-flex">
-                                        <p class="name mb-0"><b>Weverton Lima</b></p>
-                                        <span class="text mb-0">(17) 99168-6069</span>
+                                        <p class="name mb-0"><b id="lblNomeCliente"></b></p>
+                                        <span class="text mb-0" id="lblTelefoneCliente"></span>
                                     </div>
                                     <div class="d-flex">
-                                        <span class="info-pedido">
-                                            Recebido em 21/08 às 18:50
-                                        </span>
-                                        <span class="info-pedido link">
-                                            <i class="fas fa-motorcycle"></i>
-                                            Entrega
-                                        </span>
+                                        <span class="info-pedido" id="lblDataHora"></span>
+                                        <span class="info-pedido link" id="lblTipoEntrega"></span>
                                    </div>
                                 </div>
                             </div>
@@ -200,25 +157,23 @@
 
                         <div class="col-12">
                             <div class="card card-address cursor-default mt-2">
-                                <div class="img-icon-details">
-                                    <i class="fas fa-coins"></i>
-                                    <!-- <i class="fas fa-credit-card"></i> -->
+                                <div class="img-icon-details status" id="lblFormaPagamentoIcon">
                                 </div>
                                 <div class="infos">
-                                    <p class="name mb-0"><b>Dinheiro</b></p>
-                                    <span class="text mb-0">Troco para: R$ 50,00</span>
+                                    <p class="name mb-0"><b id="lblFormaPagamentoTitulo"></b></p>
+                                    <span class="text mb-0" id="lblFormaPagamentoDescricao"></span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="col-12">
-                            <div class="card card-address mt-2">
-                                <div class="img-icon-details">
+                        <div class="col-12 hidden" id="container-endereco">
+                            <div class="card card-address cursor-default mt-2">
+                                <div class="img-icon-details status">
                                     <i class="fas fa-map-marked-alt"></i>
                                 </div>
                                 <div class="infos">
-                                    <p class="name mb-0"><b>Rua André Bovolato, 105, Jardim das Acácias</b></p>
-                                    <span class="text mb-0">Bebedouro-SP / CEP: 14711-254</span>
+                                    <p class="name mb-0"><b id="lblEndereco"></b></p>
+                                    <span class="text mb-0" id="lblCep"></span>
                                 </div>
                                 <div class="icon-edit">
                                     <i class="fas fa-location-arrow"></i>
@@ -233,68 +188,10 @@
 
                     <div id="itensPedido">
 
-                        <div class="card-item mb-2">
-                            <div class="container-detalhes">
-                                <div class="detalhes-produto">
-                                    <div class="infos-produto">
-                                        <p class="name"><b>1x Calabresa</b></p>
-                                        <p class="price"><b>R$ 39,90</b></p>
-                                    </div>
-                                    <div class="infos-produto">
-                                        <p class="name-opcional mb-0">1x Borda de Catupiry</p>
-                                        <p class="price-opcional mb-0">+ R$ 8,90</p>
-                                    </div>
-                                    <div class="infos-produto">
-                                        <p class="name-opcional mb-0">1x Bacon</p>
-                                        <p class="price-opcional mb-0">+ R$ 8,90</p>
-                                    </div>
-                                    <div class="infos-produto">
-                                        <p class="obs-opcional mb-0">- Observação para enviar talheres</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-    
-                        <div class="card-item mb-2">
-                            <div class="container-detalhes">
-                                <div class="detalhes-produto">
-                                    <div class="infos-produto">
-                                        <p class="name"><b>1x 4 Queijos</b></p>
-                                        <p class="price"><b>R$ 39,90</b></p>
-                                    </div>
-                                    <div class="infos-produto">
-                                        <p class="name-opcional mb-0">1x Borda de Cheddar</p>
-                                        <p class="price-opcional mb-0">+ R$ 8,90</p>
-                                    </div>
-                                    <div class="infos-produto">
-                                        <p class="obs-opcional mb-0">- Sem gorgonzola</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-    
-                        <div class="card-item mb-2">
-                            <div class="detalhes-produto">
-                                <div class="infos-produto">
-                                    <p class="name mb-0"><i class="fas fa-motorcycle"></i>&nbsp; <b>Taxa de entrega</b></p>
-                                    <p class="price mb-0"><b>+ R$ 15,00</b></p>
-                                </div>
-                            </div>
-                        </div>
-    
-                        <div class="card-item mb-2">
-                            <div class="detalhes-produto">
-                                <div class="infos-produto">
-                                    <p class="name-total mb-0"><b>Total</b></p>
-                                    <p class="price-total mb-0"><b>R$ 106,50</b></p>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
 
-                    <div class="footer-btn mt-3">
-                        <button type="button" class="btn btn-yellow btn-sm">Aceitar Pedido</button>
+                    <div class="footer-btn mt-3" id="container-action-footer">
+                        
                     </div>
 
                 </div>
@@ -308,10 +205,9 @@
     </div>
 
 
-    <script type="text/javascript" src="../js/jquery.min.js"></script>
     <script type="text/javascript" src="../js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="../js/app.js"></script>
-    <script type="text/javascript" src="./js/login.js"></script>
+    <script type="text/javascript" src="./js/pedidos.js"></script>
 
 </body> 
 </html>

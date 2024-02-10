@@ -22,4 +22,15 @@ module.exports = (server) => {
         res.send(result);
     });
 
+    server.get('/pedido/painel/:idpedidostatus', Acesso.verificaTokenAcesso, async (req, res) => {
+        const result = await ct.controllers().obterPedidoPorStatus(req);
+        res.send(result);
+    });
+
+    server.post('/pedido/mover', Acesso.verificaTokenAcesso, async (req, res) => {
+        const result = await ct.controllers().atualizarStatusPedido(req);
+        res.send(result);
+    });
+
+
 }
