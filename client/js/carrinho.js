@@ -9,6 +9,7 @@ var CARRINHO_ATUAL = [];
 var TAXAS_ENTREGA = [];
 var TAXA_ATUAL = 0;
 var TAXA_ATUAL_ID = null;
+var TEMPO_DEFAULT = '';
 
 var FORMAS_PAGAMENTO = [];
 var FORMA_SELECIONADA = null;
@@ -27,12 +28,12 @@ carrinho.event = {
         var SPMaskBehavior = function (val) {
             return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
         },
-        spOptions = {
-        onKeyPress: function(val, e, field, options) {
-            field.mask(SPMaskBehavior.apply({}, arguments), options);
-            }
-        };
-    
+            spOptions = {
+                onKeyPress: function (val, e, field, options) {
+                    field.mask(SPMaskBehavior.apply({}, arguments), options);
+                }
+            };
+
         $('.sp_celphones').mask(SPMaskBehavior, spOptions);
 
         carrinho.method.obterCarrinho();
@@ -277,7 +278,7 @@ carrinho.method = {
                         tempo = ` (${delivery[0].tempominimo}-${delivery[0].tempomaximo}min)`;
                     }
 
-                    document.querySelector("#lblTipoEntregaTempo").innerText = `Entrega${tempo}`
+                    TEMPO_DEFAULT = `${tempo}`; // seta na variavel global para ser usado depois
                     document.querySelector("#containerTipoEntrega").classList.remove('hidden');
                 }
 
@@ -368,6 +369,19 @@ carrinho.method = {
         if (TAXAS_ENTREGA[0].idtaxaentregatipo == 1) {
             TAXA_ATUAL = TAXAS_ENTREGA[0].valor;
             TAXA_ATUAL_ID = TAXAS_ENTREGA[0].idtaxaentrega;
+
+            let tempo = '';
+
+            if ((TAXAS_ENTREGA[0].tempominimo != null && TAXAS_ENTREGA[0].tempominimo > 0) &&
+                (TAXAS_ENTREGA[0].tempomaximo != null && TAXAS_ENTREGA[0].tempomaximo > 0)) {
+                tempo = ` (${TAXAS_ENTREGA[0].tempominimo}-${TAXAS_ENTREGA[0].tempomaximo}min)`;
+            }
+            else {
+                tempo = TEMPO_DEFAULT;
+            }
+
+            document.querySelector("#lblTipoEntregaTempo").innerText = `Entrega${tempo}`;
+
         }
 
         // Taxa por Distância
@@ -386,14 +400,14 @@ carrinho.method = {
                 }
 
                 app.method.loading(true);
-        
+
                 app.method.post('/pedido/taxa', JSON.stringify(dados),
                     (response) => {
 
                         app.method.loading(false);
-        
+
                         console.log('response', response)
-        
+
                         if (response.status == "error") {
                             console.log(response.message)
                             return;
@@ -403,13 +417,31 @@ carrinho.method = {
                         TAXA_ATUAL_ID = response.idtaxa;
                         carrinho.method.atualizarValorTotal();
 
+                        // seta o tempo minimo e máximo da entrega
+                        let filtro_taxa = TAXAS_ENTREGA.filter((e) => { return e.idtaxaentrega == TAXA_ATUAL_ID });
+
+                        if (filtro_taxa.length > 0) {
+
+                            let tempo = '';
+
+                            if ((filtro_taxa[0].tempominimo != null && filtro_taxa[0].tempominimo > 0) &&
+                                (filtro_taxa[0].tempomaximo != null && filtro_taxa[0].tempomaximo > 0)) {
+                                tempo = ` (${filtro_taxa[0].tempominimo}-${filtro_taxa[0].tempomaximo}min)`;
+                            }
+                            else {
+                                tempo = TEMPO_DEFAULT;
+                            }
+
+                            document.querySelector("#lblTipoEntregaTempo").innerText = `Entrega${tempo}`;
+                        }
+
                     },
-                    (error) => {    
+                    (error) => {
                         app.method.loading(false);
                         console.log('error', error)
                     }, true
                 )
-                
+
             }
             else {
                 TAXA_ATUAL = 0;
@@ -421,6 +453,9 @@ carrinho.method = {
         // Sem taxa
         if (TAXAS_ENTREGA[0].idtaxaentregatipo == 3) {
             TAXA_ATUAL = 0;
+
+            // seta o tempo minimo e máximo default
+            document.querySelector("#lblTipoEntregaTempo").innerText = `Entrega${TEMPO_DEFAULT}`;
         }
 
         carrinho.method.atualizarValorTotal();
@@ -723,7 +758,7 @@ carrinho.method = {
             document.querySelector("#cardAddFormaPagamento").classList.add('hidden');
 
             document.querySelector("#lblFormaPagamentoSelecionada").innerText = FORMA_SELECIONADA.nome;
-            
+
             // se for Pix
             if (FORMAS_PAGAMENTO.idformapagamento == 1) {
                 document.querySelector("#lblDescFormaPagamentoSelecionada").innerText = `Pagamento na entrega do pedido.`;
@@ -739,7 +774,7 @@ carrinho.method = {
                 else {
                     document.querySelector("#lblDescFormaPagamentoSelecionada").innerText = `Pagamento na entrega do pedido.`;
                 }
-                
+
                 document.querySelector("#iconFormaPagamentoSelecionada").innerHTML = `<i class="fas fa-coins"></i>`;
             }
             // se for cartão
@@ -765,7 +800,7 @@ carrinho.method = {
     // abre as opções de formas de pagamento
     abrirModalFormaPagamento: () => {
         document.querySelector('#modalActionsFormaPagamento').classList.remove('hidden');
-    },  
+    },
 
     // fecha a modal de formas de pagamento
     fecharModalActionsFormaPagamento: () => {
@@ -840,9 +875,9 @@ carrinho.method = {
                 (response) => {
 
                     app.method.loading(false);
-    
+
                     console.log('response', response)
-    
+
                     if (response.status == "error") {
                         console.log(response.message)
                         return;
@@ -863,7 +898,7 @@ carrinho.method = {
                     }, 1000);
 
                 },
-                (error) => {    
+                (error) => {
                     app.method.loading(false);
                     console.log('error', error)
                 }, true

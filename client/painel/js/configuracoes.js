@@ -4,6 +4,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
 var config = {};
 
+var TAXA_UNICA_ID = 0;
+var TAXA_DISTANCIA_SELECIONADA = 0;
+
 config.event = {
 
     init: () => {
@@ -13,6 +16,8 @@ config.event = {
 
         // inicia a primeira Tab
         config.method.openTab('delivery-retirada');
+
+        $('.money').mask('#.##0,00', { reverse: true });
 
     }
 
@@ -323,7 +328,7 @@ config.method = {
     },
 
 
-    // -------- TAB FORMAS DE PAGAMENTO -----------
+    // -------- TAB TAXA ENTREGA -----------
 
     obterConfigTaxaEntrega: () => {
 
@@ -349,14 +354,18 @@ config.method = {
                 document.querySelector("#chkTaxaUnica").checked = taxaunica[0].ativo ? true : false;
                 document.querySelector("#chkTaxaDistancia").checked = taxadistancia[0].ativo ? true : false;
 
+                Array.from(document.querySelectorAll(".tab-item-taxa")).forEach(e => e.classList.add('hidden'));
+        
                 if (semtaxa[0].ativo) {
                     document.querySelector("#container-sem-taxa").classList.remove('hidden');
                 }
                 else if (taxaunica[0].ativo) {
                     document.querySelector("#container-taxa-unica").classList.remove('hidden');
+                    config.method.listarTaxaUnica();
                 }
                 else {
                     document.querySelector("#container-taxa-distancia").classList.remove('hidden');
+                    config.method.listarTaxaDistancia();
                 }
 
             },
@@ -409,38 +418,418 @@ config.method = {
             taxadistancia: 0
         }
 
-        // app.method.post('/formapagamento/ativar', JSON.stringify(dados),
-        //     (response) => {
-        //         console.log(response)
+        TAXA_UNICA_ID = 0;
 
-        //         app.method.loading(false);
+        app.method.loading(true);
 
-        //         if (response.status === 'error') {
-        //             app.method.mensagem(response.message);
-        //             return;
-        //         }
+        app.method.post('/taxaentregatipo/ativar', JSON.stringify(dados),
+            (response) => {
+                console.log(response)
 
-        //         app.method.mensagem(response.message, 'green');
+                app.method.loading(false);
 
-        //     },
-        //     (error) => {
-        //         app.method.loading(false);
-        //         console.log('error', error)
-        //     }
-        // )
+                if (response.status === 'error') {
+                    app.method.mensagem(response.message);
+                    return;
+                }
+
+                app.method.mensagem(response.message, 'green');
+
+            },
+            (error) => {
+                app.method.loading(false);
+                console.log('error', error)
+            }
+        )
 
     },
 
     // seta as configurações da tab de Taxa Unica
     obterConfigTaxaUnica: () => {
 
+        // Primeiro, já seta a taxa como ativa
+        var dados = {
+            semtaxa: 0,
+            taxaunica: 1,
+            taxadistancia: 0
+        }
+
+        TAXA_DISTANCIA_SELECIONADA = 0;
+
+        app.method.loading(true);
+
+        app.method.post('/taxaentregatipo/ativar', JSON.stringify(dados),
+            (response) => {
+                console.log(response)
+
+                app.method.loading(false);
+
+                if (response.status === 'error') {
+                    app.method.mensagem(response.message);
+                    return;
+                }
+
+                app.method.mensagem(response.message, 'green');
+
+                // agora, seta as opções da taxa única
+                config.method.listarTaxaUnica();
+
+            },
+            (error) => {
+                app.method.loading(false);
+                console.log('error', error)
+            }
+        )
+
     },
 
     // seta as configurações da tab de Taxa por Distancia
     obterConfigTaxaDistancia: () => {
 
+        // Primeiro, já seta a taxa como ativa
+        var dados = {
+            semtaxa: 0,
+            taxaunica: 0,
+            taxadistancia: 1
+        }
+
+        app.method.loading(true);
+
+        app.method.post('/taxaentregatipo/ativar', JSON.stringify(dados),
+            (response) => {
+                console.log(response)
+
+                app.method.loading(false);
+
+                if (response.status === 'error') {
+                    app.method.mensagem(response.message);
+                    return;
+                }
+
+                app.method.mensagem(response.message, 'green');
+
+            },
+            (error) => {
+                app.method.loading(false);
+                console.log('error', error)
+            }
+        )
+
     },
 
+    // obtem as configurações da taxa única
+    listarTaxaUnica: () => {
+
+        app.method.get('/taxaentregatipo/taxaunica',
+            (response) => {
+                console.log(response)
+
+                app.method.loading(false);
+
+                if (response.status === 'error') {
+                    app.method.mensagem(response.message);
+                    return;
+                }
+
+                // se existir uma config, mostra na tela
+                if (response.data.length > 0) {
+
+                    TAXA_UNICA_ID = response.data[0].idtaxaentrega;
+
+                    document.querySelector("#txtTaxaUnicaValor").value = (response.data[0].valor).toFixed(2).toString().replace('.', ',');
+                    document.querySelector("#txtTaxaUnicaTempoMinimoEntrega").value = response.data[0].tempominimo;
+                    document.querySelector("#txtTaxaUnicaTempoMaximoEntrega").value = response.data[0].tempomaximo;
+
+                }
+
+            },
+            (error) => {
+                app.method.loading(false);
+                console.log('error', error)
+            }
+        )
+
+    },
+
+    // obtem as configurações das taxas por distancia
+    listarTaxaDistancia: () => {
+
+        app.method.get('/taxaentregatipo/taxadistancia',
+            (response) => {
+                console.log(response)
+
+                app.method.loading(false);
+
+                if (response.status === 'error') {
+                    app.method.mensagem(response.message);
+                    return;
+                }
+
+                // carrega a lista de taxas por distancia
+                config.method.carregarListaTaxasDistancia(response.data);
+
+            },
+            (error) => {
+                app.method.loading(false);
+                console.log('error', error)
+            }
+        )
+
+    },
+
+    // método para carregar a lista das taxas por distancia cadastradas
+    carregarListaTaxasDistancia: (list) => {
+
+        document.querySelector('#listaTaxasDistancia').innerHTML = '';
+
+        if (list.length > 0) {
+
+            // preenche os produtos na tela
+            list.forEach((e, i) => {
+
+                let tempo = '';
+                let acoes = `<a class="dropdown-item" href="#!" onclick="config.method.ativarTaxaDistancia('${e.idtaxaentrega}', 0)"><i class="fas fa-ban"></i>&nbsp; <b>Desativar</b></a>`;
+                let status = '<span class="badge badge-success">Ativado</span>';
+            
+                // valida se existe tempo
+                if ((e.tempominimo != null && e.tempominimo != '') && (e.tempomaximo != null && e.tempomaximo != '')) {
+                    tempo = `de ${e.tempominimo} a ${e.tempomaximo} min`;
+                }
+
+                // valida os status
+                if (e.ativo == 0) {
+                    status = '<span class="badge badge-danger">Desativado</span>';
+                    acoes = `<a class="dropdown-item" href="#!" onclick="config.method.ativarTaxaDistancia('${e.idtaxaentrega}', 1)"><i class="fas fa-check"></i>&nbsp; <b>Ativar</b></a>`;
+                }
+
+                let temp = config.template.taxadistancia.replace(/\${idtaxaentrega}/g, e.idtaxaentrega)
+                    .replace(/\${km}/g, `${e.distancia} km`)
+                    .replace(/\${valor}/g, `R$ ${(e.valor).toFixed(2).replace('.', ',')}`)
+                    .replace(/\${tempo}/g, tempo)
+                    .replace(/\${status}/g, status)
+                    .replace(/\${acao}/g, acoes)
+
+                // adiciona a taxa na tabela
+                document.querySelector("#listaTaxasDistancia").innerHTML += temp;
+
+            });
+
+        }
+        else {
+
+            // nenhum item cadastrado
+            document.querySelector("#listaTaxasDistancia").innerHTML = `
+                <tr>
+                    <td colspan="5">Nenhuma taxa cadastrada.</td>
+                </tr>
+            `;
+
+        }
+
+    },
+
+    // método para salvar a configuração de taxa única
+    salvarTaxaUnica: () => {
+
+        // valida os campos
+        let valor = parseFloat(document.querySelector("#txtTaxaUnicaValor").value.replace(/\./g, '').replace(',', '.'));
+        let tempominimo = parseInt(document.querySelector("#txtTaxaUnicaTempoMinimoEntrega").value.trim());
+        let tempomaximo = parseInt(document.querySelector("#txtTaxaUnicaTempoMaximoEntrega").value.trim());
+
+        if (isNaN(valor) || valor <= 0) {
+            app.method.mensagem("Informe o valor da taxa, por favor.")
+            return;
+        }
+
+        if (isNaN(tempominimo)) {
+            tempominimo = '';
+        }
+
+        if (isNaN(tempomaximo)) {
+            tempominimo = '';
+        }
+
+        let dados = {
+            idtaxaentrega: TAXA_UNICA_ID,
+            valor: valor,
+            tempominimo: tempominimo,
+            tempomaximo: tempomaximo
+        }
+
+        app.method.loading(true);
+
+        app.method.post('/taxaentregatipo/taxaunica', JSON.stringify(dados),
+            (response) => {
+                console.log(response)
+
+                app.method.loading(false);
+
+                if (response.status === 'error') {
+                    app.method.mensagem(response.message);
+                    return;
+                }
+
+                app.method.mensagem(response.message, 'green');
+
+                config.method.listarTaxaUnica();
+
+            },
+            (error) => {
+                app.method.loading(false);
+                console.log('error', error)
+            }
+        )
+
+    },
+
+    // adiciona uma nova taxa por distancia
+    adicionarTaxaDistancia: () => {
+
+        // valida os campos
+        let distancia = parseFloat(document.querySelector('#txtTaxaDistanciaKm').value.trim());
+        let valor = parseFloat(document.querySelector("#txtTaxaDistanciaValor").value.replace(/\./g, '').replace(',', '.'));
+        let tempominimo = parseInt(document.querySelector("#txtTaxaDistanciaTempoMinimoEntrega").value.trim());
+        let tempomaximo = parseInt(document.querySelector("#txtTaxaDistanciaTempoMaximoEntrega").value.trim());
+
+        if (isNaN(distancia) || valor <= 0) {
+            app.method.mensagem("Informe a distância corretamente (somente números).")
+            return;
+        }
+
+        if (isNaN(valor) || valor <= 0) {
+            app.method.mensagem("Informe o valor da taxa, por favor.")
+            return;
+        }
+
+        if (isNaN(tempominimo)) {
+            tempominimo = '';
+        }
+
+        if (isNaN(tempomaximo)) {
+            tempominimo = '';
+        }
+
+        let dados = {
+            distancia: distancia, 
+            valor: valor,
+            tempominimo: tempominimo,
+            tempomaximo: tempomaximo
+        }
+
+        app.method.loading(true);
+
+        app.method.post('/taxaentregatipo/taxadistancia', JSON.stringify(dados),
+            (response) => {
+                console.log(response)
+
+                app.method.loading(false);
+
+                if (response.status === 'error') {
+                    app.method.mensagem(response.message);
+                    return;
+                }
+
+                app.method.mensagem(response.message, 'green');
+
+                // limpa os campos
+                document.querySelector('#txtTaxaDistanciaKm').value = '';
+                document.querySelector("#txtTaxaDistanciaValor").value = '';
+                document.querySelector("#txtTaxaDistanciaTempoMinimoEntrega").value = '';
+                document.querySelector("#txtTaxaDistanciaTempoMaximoEntrega").value = '';
+
+                // carrega a tabela novamente
+                config.method.listarTaxaDistancia();
+
+            },
+            (error) => {
+                app.method.loading(false);
+                console.log('error', error)
+            }
+        )
+
+
+    },
+
+    // abre a modal de remover a linha da taxa por distancia
+    abrirModalRemoverTaxaDistancia: (idtaxaentrega) => {
+
+        TAXA_DISTANCIA_SELECIONADA = idtaxaentrega;
+
+        // abre a modal
+        $('#modalRemoverTaxaDistancia').modal('show');
+
+    },
+
+    // remove a taxa por distancia selecionada
+    removerTaxaDistancia: () => {
+
+        app.method.loading(true);
+
+        var dados = {
+            idtaxaentrega: TAXA_DISTANCIA_SELECIONADA
+        }
+
+        app.method.post('/taxaentregatipo/taxadistancia/remover', JSON.stringify(dados),
+            (response) => {
+                console.log(response)
+
+                app.method.loading(false);
+
+                $('#modalRemoverTaxaDistancia').modal('hide');
+
+                if (response.status === 'error') {
+                    app.method.mensagem(response.message);
+                    return;
+                }
+
+                app.method.mensagem(response.message, 'green');
+
+                // carrega a tabela novamente
+                config.method.listarTaxaDistancia();
+
+            },
+            (error) => {
+                app.method.loading(false);
+                console.log('error', error)
+            }
+        )
+
+    },
+
+    // ativar ou desativar uma taxa de distancia
+    ativarTaxaDistancia: (idtaxaentrega, ativar) => {
+
+        app.method.loading(true);
+
+        var dados = {
+            idtaxaentrega: idtaxaentrega,
+            ativar: ativar
+        }
+
+        app.method.post('/taxaentregatipo/taxadistancia/ativar', JSON.stringify(dados),
+            (response) => {
+                console.log(response)
+
+                app.method.loading(false);
+
+                if (response.status === 'error') {
+                    app.method.mensagem(response.message);
+                    return;
+                }
+
+                app.method.mensagem(response.message, 'green');
+
+                // carrega a tabela novamente
+                config.method.listarTaxaDistancia();
+
+            },
+            (error) => {
+                app.method.loading(false);
+                console.log('error', error)
+            }
+        )
+
+    },
 
     // -------- TAB FORMAS DE PAGAMENTO -----------
 
@@ -548,3 +937,26 @@ config.method = {
 
 }
 
+config.template = {
+
+    taxadistancia: `
+        <tr>
+            <td>Até \${km}</td>
+            <td>\${valor}</td>
+            <td>\${tempo}</td>
+            <td>\${status}</td>
+            <td>
+                <div class="dropdown">
+                    <button class="btn btn-white btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        \${acao}
+                        <a class="dropdown-item color-red" href="#!" onclick="config.method.abrirModalRemoverTaxaDistancia('\${idtaxaentrega}')"><i class="fas fa-trash-alt"></i>&nbsp; <b>Remover</b></a>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    `
+
+}

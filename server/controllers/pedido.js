@@ -57,8 +57,6 @@ const controllers = () => {
             var ComandoSQLTaxa = await readCommandSql.retornaStringSql('obterValorTaxaPorKm', 'entrega');
             var taxas = await db.Query(ComandoSQLTaxa, { distancia: distanciaKm });
 
-            console.log('taxas[0].idtaxaentrega', taxas[0].idtaxaentrega)
-
             if (taxas.length > 0) {
                 return {
                     status: 'success',
