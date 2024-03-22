@@ -417,7 +417,7 @@ pedido.method = {
     moverPara: (target, idpedido) => {
 
         // se for recusar, abre a modal de confirmação
-        if (idpedido == 6) {
+        if (parseInt(target) == 6) {
             return;
         }
 

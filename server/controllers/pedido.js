@@ -318,8 +318,17 @@ const controllers = () => {
 
         try {
 
-            var ComandoSQL = await readCommandSql.retornaStringSql('atualizarStatusPedido', 'pedido');
-            var result = await db.Query(ComandoSQL, { idpedidostatus: req.body.tab, idpedido: req.body.idpedido });
+            if (req.body.tab == 5) {
+
+                // finalizar pedido
+
+                var ComandoSQL = await readCommandSql.retornaStringSql('atualizarStatusPedidoFinalizado', 'pedido');
+                await db.Query(ComandoSQL, { idpedidostatus: req.body.tab, idpedido: req.body.idpedido });
+            }
+            else {
+                var ComandoSQL = await readCommandSql.retornaStringSql('atualizarStatusPedido', 'pedido');
+                await db.Query(ComandoSQL, { idpedidostatus: req.body.tab, idpedido: req.body.idpedido });
+            }
 
             return {
                 status: 'success',

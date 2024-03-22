@@ -131,3 +131,13 @@ WHERE idpedido = @idpedido
 
 --END#atualizarStatusPedido#
 
+
+--INIT#atualizarStatusPedidoFinalizado#
+
+UPDATE pedido
+SET idpedidostatus = @idpedidostatus, datafinalizado = CURRENT_TIMESTAMP()
+WHERE idpedido = @idpedido
+
+--END#atualizarStatusPedidoFinalizado#
+
+
