@@ -22,8 +22,11 @@ relatorio.event = {
         // incia a primeira tab
         relatorio.method.openTab('faturamento');
 
-        // Bloqueia os inputs de FILTROS por DATA
-        relatorio.method.bloquearDatasFiltros();
+        // Bloqueia os inputs de FILTROS por DATA (Faturamento)
+        relatorio.method.bloquearDatasFiltrosFaturamento();
+
+        // Bloqueia os inputs de FILTROS por DATA (Histórico)
+        relatorio.method.bloquearDatasFiltrosHistorico();
 
     }
 
@@ -47,7 +50,8 @@ relatorio.method = {
                 break;
 
             case 'historico':
-                relatorio.method.obterHistorico();
+                relatorio.method.carregarDataAtualFiltroHistorico();
+                relatorio.method.filtrarHistorico();
                 break;
 
             default:
@@ -57,7 +61,7 @@ relatorio.method = {
     },
 
     // bloquea o limite das datas pro filtro
-    bloquearDatasFiltros: () => {
+    bloquearDatasFiltrosFaturamento: () => {
 
         // a data inicial poderá ser seleciona até 1 ANO atrás
         var umAnoAtras = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
@@ -109,7 +113,7 @@ relatorio.method = {
         if (mesIni < 10) mesIni = '0' + mesIni;
 
         if (diaFim < 10) diaFim = '0' + diaFim;
-        if (mesFim < 10) mesFim = '0' + mesFim;        
+        if (mesFim < 10) mesFim = '0' + mesFim;
 
         $("#txtDataInicioFaturamento").val(`${anoIni}-${mesIni}-${diaIni}`);
         $("#txtDataFimFaturamento").val(`${anoFim}-${mesFim}-${diaFim}`);
@@ -197,7 +201,7 @@ relatorio.method = {
             //console.log('diff_days', diff_days)
 
             for (let index = 0; index < diff_days; index++) {
-                
+
                 let data_teste = new Date(data1);
                 data_teste.setDate(data_teste.getDate() + index);
 
@@ -213,10 +217,10 @@ relatorio.method = {
                 //console.log('data_final', data_final);
 
                 // valida se tem registros pra essa data
-                let existe = lista.filter((e) => { 
+                let existe = lista.filter((e) => {
                     let filtro = e.filtro.split('T')[0];
                     let dataFormatada = `${filtro.split('-')[2]}/${filtro.split('-')[1]}/${filtro.split('-')[0]}`;
-                    return dataFormatada == data_final; 
+                    return dataFormatada == data_final;
                 })
 
                 if (existe.length > 0) {
@@ -308,7 +312,7 @@ relatorio.method = {
 
                                 bodyLines.forEach(function (body, i) {
 
-                                    console.log('body', body)
+                                    //console.log('body', body)
 
                                     let valor = body[0].split(':')[1].trim();
                                     let texto = body[0].split(':')[0].trim();
@@ -418,60 +422,262 @@ relatorio.method = {
     },
 
 
-
-
-
-
     // ---------- HISTÓRICO DE PEDIDOS --------------
 
-    // carrega o histórico de pedidos
-    obterHistorico: () => {
+    // bloquea o limite das datas pro filtro
+    bloquearDatasFiltrosHistorico: () => {
 
+        // a data inicial poderá ser seleciona até 1 ANO atrás
+        var umAnoAtras = new Date(new Date().setFullYear(new Date().getFullYear() - 1));
+
+        let diaIni = umAnoAtras.getDate();
+        let mesIni = umAnoAtras.getMonth() + 1;
+        let anoIni = umAnoAtras.getFullYear();
+
+        if (diaIni < 10) diaIni = '0' + diaIni;
+        if (mesIni < 10) mesIni = '0' + mesIni;
+
+        // seta o input com a data minima de 1 ano atras
+        $("#txtDataInicioHistorico").attr('min', `${anoIni}-${mesIni}-${diaIni}`);
+        $("#txtDataFimHistorico").attr('min', `${anoIni}-${mesIni}-${diaIni}`);
+
+        // a data de seleção final pode ser somente até HOJE
+        let diaFim = new Date().getDate();
+        let mesFim = new Date().getMonth() + 1;
+        let anoFim = new Date().getFullYear();
+
+        if (diaFim < 10) diaFim = '0' + diaFim;
+        if (mesFim < 10) mesFim = '0' + mesFim;
+
+        // seta o input com a data máxima de HOJE
+        $("#txtDataInicioHistorico").attr('max', `${anoFim}-${mesFim}-${diaFim}`);
+        $("#txtDataFimHistorico").attr('max', `${anoFim}-${mesFim}-${diaFim}`);
 
     },
 
+    // carrega a data atual para o filtro do histócio
+    carregarDataAtualFiltroHistorico: () => {
+
+        // Carrega o MÊS atual no filtro
+        var date = new Date();
+        var firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+        var lastDay = new Date();
+
+        let diaIni = firstDay.getDate();
+        let mesIni = firstDay.getMonth() + 1;
+        let anoIni = firstDay.getFullYear();
+
+        let diaFim = lastDay.getDate();
+        let mesFim = lastDay.getMonth() + 1;
+        let anoFim = lastDay.getFullYear();
+
+        if (diaIni < 10) diaIni = '0' + diaIni;
+        if (mesIni < 10) mesIni = '0' + mesIni;
+
+        if (diaFim < 10) diaFim = '0' + diaFim;
+        if (mesFim < 10) mesFim = '0' + mesFim;
+
+        $("#txtDataInicioHistorico").val(`${anoIni}-${mesIni}-${diaIni}`);
+        $("#txtDataFimHistorico").val(`${anoFim}-${mesFim}-${diaFim}`); // Somente até HOJE
+
+    },
+
+    // filtra o historico de pedidos de acordo com o filtro
+    filtrarHistorico: () => {
+
+        let datainicio = $("#txtDataInicioHistorico").val();
+        let datafim = $("#txtDataFimHistorico").val();
+
+        if (datainicio == '') {
+            app.method.mensagem("Informe uma data de início válida, por favor.");
+            return;
+        }
+
+        if (datafim == '') {
+            app.method.mensagem("Informe uma data fim válida, por favor.");
+            return;
+        }
+
+        let dados = {
+            datainicio: datainicio,
+            datafim: datafim,
+        }
+
+        app.method.loading(true);
+
+        app.method.post('/pedido/historico', JSON.stringify(dados),
+            (response) => {
+                console.log(response)
+
+                app.method.loading(false);
+
+                if (response.status === 'error') {
+                    app.method.mensagem(response.message);
+                    return;
+                }
+
+                relatorio.method.listarPedidos(response.data);
+
+            },
+            (error) => {
+                app.method.loading(false);
+                console.log('error', error)
+            }
+        )
+
+    },
+
+    // carrega a tabela de pedidos
     listarPedidos: (list) => {
 
-        $("#data-table").DataTable({
-            destroy: true,
-            aaSorting: [[0, 'asc']],
-            dom: 'Bfrtipl',
-            buttons: ['pageLength'],
-            language: {
-                "sEmptyTable": "Nenhum registro encontrado",
-                "sInfo": "Mostrando de _START_ até _END_ de _TOTAL_ registros",
-                "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
-                "sInfoFiltered": "(Filtrados de _MAX_ registros)",
-                "sInfoPostFix": "",
-                "sInfoThousands": ".",
-                "sLengthMenu": "_MENU_ resultados por página",
-                "sLoadingRecords": "Carregando...",
-                "sProcessing": "Processando...",
-                "sZeroRecords": "Nenhum registro encontrado",
-                "sSearch": "Pesquisar",
-                "oPaginate": {
-                    "sNext": "Próximo",
-                    "sPrevious": "Anterior",
-                    "sFirst": "Primeiro",
-                    "sLast": "Último"
-                },
-                "oAria": {
-                    "sSortAscending": ": Ordenar colunas de forma ascendente",
-                    "sSortDescending": ": Ordenar colunas de forma descendente"
-                },
-                buttons: {
-                    pageLength: {
-                        _: "Mostrar %d linhas",
-                        '-1': "Mostrar Todos"
-                    }
-                }
-            },
-            columnDefs: [
-                { targets: 'no-sort', orderable: false }
-            ]
+        $(".table-responsive").html('');
 
-        });
+        if (list.length > 0) {
+            
+            $(".table-responsive").append(relatorio.template.tablePedido);
+
+            let valor_total = 0;
+
+            $.each(list, (i, e) => {
+
+                // formata o status
+                let status = '';
+
+                if (e.idpedidostatus == 1) {
+                    status = `<i class="far fa-dot-circle"></i> ${e.pedidostatus}`;
+                }
+                else if (e.idpedidostatus == 2) {
+                    status = `<i class="far fa-thumbs-up"></i> ${e.pedidostatus}`;
+                }
+                else if (e.idpedidostatus == 3) {
+                    status = `<i class="far fa-clock"></i> ${e.pedidostatus}`;
+                }
+                else if (e.idpedidostatus == 4) {
+                    status = `<i class="fas fa-motorcycle"></i> ${e.pedidostatus}`;
+                }
+                else if (e.idpedidostatus == 5) {
+                    status = `<i class="far fa-check-circle"></i> ${e.pedidostatus}`;
+                }
+                else if (e.idpedidostatus == 6) {
+                    status = `<i class="far fa-times-circle"></i> ${e.pedidostatus}`;
+                }
+
+                // formata a data
+                let databanco = e.datacadastro.split('T')[0];
+                let horabanco = e.datacadastro.split('T')[1];
+
+                let datacadastro = `${databanco.split('-')[2]}/${databanco.split('-')[1]}/${databanco.split('-')[0]} às ${horabanco.split(':')[0]}:${horabanco.split(':')[1]}`;
+
+                let _temp = relatorio.template.trPedido.replace(/\${idpedido}/g, e.idpedido)
+                    .replace(/\${cliente}/g, e.nomecliente)
+                    .replace(/\${tipoentrega}/g, e.tipoentrega)
+                    .replace(/\${formapagamento}/g, e.formapagamento)
+                    .replace(/\${datacadastro}/g, datacadastro)
+                    .replace(/\${status}/g, status)
+                    .replace(/\${total}/g, `R$ ${(parseFloat(e.total).toFixed(2)).toString().replace('.', ',')}`)
+
+                $('#listaPedidos').append(_temp);
+
+                valor_total += e.total
+
+                // último item, renderiza a tabela na tela
+                if ((i + 1) == list.length) {
+
+                    // adiciona o total no footer da tabela
+                    $("#lblTotalSomaPedidos").text(`R$ ${(parseFloat(valor_total).toFixed(2)).toString().replace('.', ',')}`);
+
+                    $("#data-table").DataTable({
+                        destroy: true,
+                        aaSorting: [[4, 'desc']],
+                        dom: 'Bfrtipl',
+                        buttons: ['pageLength'],
+                        language: {
+                            url: "./js/datatable.pt-BR.json"
+                            , buttons: {
+                                pageLength: {
+                                    _: "Mostrar %d linhas",
+                                    '-1': "Mostrar Todos"
+                                }
+                            }
+                        },
+                        columnDefs: [
+                            { targets: 'no-sort', orderable: false }
+                        ]
+        
+                    });
+
+                }
+            })
+
+        }
+        else {
+
+            // nenhum registro encontrado
+            $(".table-responsive").append('<p class="mb-0">Nenhum pedido encontrado no período selecionado.</p>');
+
+        }
 
     },
+
+
+    // abre a modal de detalhes do pedido
+    abrirDetalhesPedido: (idpedido) => {
+
+    }
+
+}
+
+relatorio.template = {
+
+    tablePedido: `
+        
+        <table id="data-table" class="table data-table mb-0">
+            <thead>
+                <tr>
+                    <th># Código</th>
+                    <th>Cliente</th>
+                    <th>Tipo</th>
+                    <th>Pagamento</th>
+                    <th>Criado em</th>
+                    <th>Status</th>
+                    <th>(R$) Total</th>
+                    <th class="no-sort">Ações</th>
+                </tr>
+            </thead>
+            <tbody id="listaPedidos">
+                
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th style="color: #179e40;" id="lblTotalSomaPedidos">-</th>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+        
+    `,
+
+    trPedido: `
+        <tr>
+            <td>\${idpedido}</td>
+            <td>\${cliente}</td>
+            <td>\${tipoentrega}</td>
+            <td>\${formapagamento}</td>
+            <td>\${datacadastro}</td>
+            <td>\${status}</td>
+            <td style="color: #179e40;">\${total}</td>
+            <td>
+                <a href="#!" class="btn btn-white btn-sm" onclick="pedido.method.abrirModalDetalhes('\${idpedido}')">
+                    <i class="fas fa-receipt"></i>&nbsp; Detalhes
+                </a>
+            </td>
+        </tr>
+    `
 
 }

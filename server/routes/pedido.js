@@ -32,5 +32,9 @@ module.exports = (server) => {
         res.send(result);
     });
 
-
+    // Relatório de histórico dos pedidos
+    server.post('/pedido/historico', Acesso.verificaTokenAcesso, async (req, res) => {
+        const result = await ct.controllers().historicoPedidos(req);
+        res.send(result);
+    });
 }

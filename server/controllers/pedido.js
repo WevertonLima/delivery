@@ -345,12 +345,42 @@ const controllers = () => {
 
     }
 
+    // filtra o histórico de pedidos
+    const historicoPedidos = async (req) => {
+
+        try {
+
+            let datainicio = `${req.body.datainicio} 00:00:00`;
+            let datafim = `${req.body.datafim} 23:59:59`;
+
+            var ComandoSQL = await readCommandSql.retornaStringSql('historicoPedidos', 'pedido');
+            var result = await db.Query(ComandoSQL, {
+                datainicio: datainicio,
+                datafim: datafim
+            });
+
+            return {
+                status: 'success',
+                data: result
+            }
+
+        } catch (ex) {
+            console.log(ex);
+            return {
+                status: 'error',
+                message: 'Falha ao obter o histórico dos pedidos. Por favor, tente novamente.'
+            }
+        }
+
+    }
+
     return Object.create({
         calcularTaxaDelivery
         , salvarPedido
         , obterPedidoPorId
         , obterPedidoPorStatus
         , atualizarStatusPedido
+        , historicoPedidos
     })
 
 }

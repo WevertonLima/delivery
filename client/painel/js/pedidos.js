@@ -1,7 +1,3 @@
-document.addEventListener("DOMContentLoaded", function (event) {
-    pedido.event.init();
-});
-
 var pedido = {};
 
 var MODAL_DETALHES = new bootstrap.Modal(document.getElementById('modalDetalhes'));
