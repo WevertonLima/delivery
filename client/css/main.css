@@ -83,6 +83,7 @@ b {
 }
 
 .toast {
+    opacity: 1!important;
     width: auto;
     color: var(--color-white);
     padding: 10px 25px;
