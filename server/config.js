@@ -8,7 +8,8 @@ var config = {
             port: 3306,
             user: 'root',
             password: 'root',
-            database: 'delivery'
+            database: 'delivery',
+            timezone: 'utc'
         },
     }
 }
